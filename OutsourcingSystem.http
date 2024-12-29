@@ -1,0 +1,6 @@
+@OutsourcingSystem_HostAddress = http://localhost:5147
+
+GET {{OutsourcingSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

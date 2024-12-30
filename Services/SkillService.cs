@@ -49,6 +49,28 @@ namespace OutsourcingSystem.Services
             catch { return 2; } //an error occured when trying to save
         }
 
+        //Reactivating after soft delete
+        public int ReactivateSkill(int SkillID)
+        {
+            try
+            {
+                var skill = _skillRepository.GetSkillByID(SkillID);
+
+                //Checking if the skill exists
+                if (skill != null)
+                {
+                    skill.Active = true; //reactivating skill
+
+                    _skillRepository.UpdateSkill(skill);
+
+                    return 0; //if everything went well then 1 will be returned 
+                }
+
+                else return 1; //skill not found
+            }
+            catch { return 2; } //an error occured when trying to save
+        }
+
 
         //Adds skill using input from user 
         public int UpdateSkill(int skillID, string name, string description)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OutsourcingSystem;
 
@@ -11,9 +12,11 @@ using OutsourcingSystem;
 namespace OutsourcingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241230092605_createenum")]
+    partial class createenum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,9 +49,6 @@ namespace OutsourcingSystem.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Notes")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -61,7 +61,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("UID");
 
-                    b.ToTable("Client", (string)null);
+                    b.ToTable("Client");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientRequestDeveloper", b =>
@@ -90,7 +90,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("ClientID");
 
-                    b.ToTable("ClientRequestDeveloper", (string)null);
+                    b.ToTable("ClientRequestDeveloper");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientRequestTeam", b =>
@@ -119,7 +119,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("ClientID");
 
-                    b.ToTable("ClientRequestTeam", (string)null);
+                    b.ToTable("ClientRequestTeam");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientReviewDeveloper", b =>
@@ -153,7 +153,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("DeveloperID");
 
-                    b.ToTable("ClientReviewDeveloper", (string)null);
+                    b.ToTable("ClientReviewDeveloper");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientReviewTeam", b =>
@@ -187,7 +187,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("ClientReviewTeam", (string)null);
+                    b.ToTable("ClientReviewTeam");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Developer", b =>
@@ -232,7 +232,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Developer", (string)null);
+                    b.ToTable("Developer");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.DeveloperSkill", b =>
@@ -250,7 +250,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("SkillID");
 
-                    b.ToTable("DeveloperSkill", (string)null);
+                    b.ToTable("DeveloperSkill");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.FeedbackOnClient", b =>
@@ -289,7 +289,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("FeedbackOnClient", (string)null);
+                    b.ToTable("FeedbackOnClient");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Project", b =>
@@ -340,10 +340,10 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
                 });
 
-            modelBuilder.Entity("OutsourcingSystem.Models.Skill", b =>
+            modelBuilder.Entity("OutsourcingSystem.Models.Skills", b =>
                 {
                     b.Property<int>("SkillID")
                         .ValueGeneratedOnAdd()
@@ -369,54 +369,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasKey("SkillID");
 
-                    b.ToTable("Skills", (string)null);
-                });
-
-            modelBuilder.Entity("OutsourcingSystem.Models.Team", b =>
-                {
-                    b.Property<int>("TeamID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeamID"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CompletedProjects")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<decimal>("HourlyRate")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ModifiedBy")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Rating")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TeamCapacity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TeamName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("TeamID");
-
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.TeamMember", b =>
@@ -434,7 +387,45 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("DeveloperID");
 
-                    b.ToTable("TeamMember", (string)null);
+                    b.ToTable("TeamMember");
+                });
+
+            modelBuilder.Entity("OutsourcingSystem.Models.Teams", b =>
+                {
+                    b.Property<int>("TeamID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeamID"));
+
+                    b.Property<int>("CompletedProjects")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("HourlyRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TeamCapacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TeamName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("TeamID");
+
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.User", b =>
@@ -452,10 +443,10 @@ namespace OutsourcingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsDeleted")
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsUserApproved")
+                    b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -467,16 +458,15 @@ namespace OutsourcingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("UID");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Client", b =>
@@ -535,7 +525,7 @@ namespace OutsourcingSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OutsourcingSystem.Models.Team", "Teams")
+                    b.HasOne("OutsourcingSystem.Models.Teams", "Teams")
                         .WithMany("ClientReviewTeam")
                         .HasForeignKey("TeamID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -565,7 +555,7 @@ namespace OutsourcingSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OutsourcingSystem.Models.Skill", "Skills")
+                    b.HasOne("OutsourcingSystem.Models.Skills", "Skills")
                         .WithMany("DeveloperSkills")
                         .HasForeignKey("SkillID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -588,7 +578,7 @@ namespace OutsourcingSystem.Migrations
                         .WithMany("FeedbackOnClient")
                         .HasForeignKey("DeveloperID");
 
-                    b.HasOne("OutsourcingSystem.Models.Team", "Team")
+                    b.HasOne("OutsourcingSystem.Models.Teams", "Team")
                         .WithMany("FeedbackOnClient")
                         .HasForeignKey("TeamID");
 
@@ -611,7 +601,7 @@ namespace OutsourcingSystem.Migrations
                         .WithMany("Project")
                         .HasForeignKey("DeveloperID");
 
-                    b.HasOne("OutsourcingSystem.Models.Team", "Teams")
+                    b.HasOne("OutsourcingSystem.Models.Teams", "Teams")
                         .WithMany("Projects")
                         .HasForeignKey("TeamID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -632,7 +622,7 @@ namespace OutsourcingSystem.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OutsourcingSystem.Models.Team", "Team")
+                    b.HasOne("OutsourcingSystem.Models.Teams", "Team")
                         .WithMany("TeamMembers")
                         .HasForeignKey("TeamID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -669,12 +659,12 @@ namespace OutsourcingSystem.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("OutsourcingSystem.Models.Skill", b =>
+            modelBuilder.Entity("OutsourcingSystem.Models.Skills", b =>
                 {
                     b.Navigation("DeveloperSkills");
                 });
 
-            modelBuilder.Entity("OutsourcingSystem.Models.Team", b =>
+            modelBuilder.Entity("OutsourcingSystem.Models.Teams", b =>
                 {
                     b.Navigation("ClientReviewTeam");
 

@@ -70,6 +70,22 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
+        [HttpPatch("Reactivate Skill")] //Allows the admin to Reactivate a skill after it has been soft deleting it completely
+        public IActionResult ReactivateSkill(int SkillID)
+        {
+            try
+            {
+                int result = _skillService.ReactivateSkill(SkillID);
+
+                if (result == 0) { return Ok("Reactivated!"); }
+                else if (result == 1) { return BadRequest("<!>Invalid skill ID<!>"); }
+                else return BadRequest("<!>Error occurred when reactivating<!>");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpGet("Get Skills")] //Gets all skills allowing for filtering using if the account is active and when it was created as non compulsury inputs 
         public IActionResult GetSkills( bool? active, DateTime? createdAt, int Page = 0, int PageSize =100) //Allows the user to input 

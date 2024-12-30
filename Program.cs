@@ -24,7 +24,9 @@ namespace OutsourcingSystem
 
             builder.Services.AddScoped<IUserRepositry, UserRepositry>();
             builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+            builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
+            builder.Services.AddScoped<ITeamService, TeamService>();
             builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IUserServices, UserServices>();
 

@@ -2,6 +2,8 @@
 
 namespace OutsourcingSystem.Models
 {
+
+
     public class User
     {
 
@@ -24,9 +26,9 @@ namespace OutsourcingSystem.Models
 
 
 
-        [Required(ErrorMessage ="Role is Required ")]
+        [Required(ErrorMessage = "Role is Required ")]
 
-        public string Role { get; set; }    //"client " , "Developer" , "Admin"
+        public string role { get; set; }   //"client " , "Developer" , "Admin"
 
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -34,7 +36,9 @@ namespace OutsourcingSystem.Models
         public DateTime? UpdatedAt { get; set; }
 
         public bool? IsDeleted { get; set; }
-        
+
+        public bool IsUserApproved { get; set; } = false; // Default to false for all users except Super Admin
+
 
 
 

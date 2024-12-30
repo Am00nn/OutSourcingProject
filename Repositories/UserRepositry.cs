@@ -94,6 +94,10 @@ namespace OutsourcingSystem.Repositories
             _context.SaveChanges();
             return true;
         }
+        public bool DoesEmailExist(string email)
+        {
+            return _context.Users.Any(u => u.Email == email);
+        }
 
     }
 }

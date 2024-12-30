@@ -2,6 +2,8 @@
 
 namespace OutsourcingSystem.DTOs
 {
+  
+
     public class UserInputDto
     {
 
@@ -23,7 +25,7 @@ namespace OutsourcingSystem.DTOs
 
         [Required(ErrorMessage = "Role is Required ")]
 
-        public string Role { get; set; }    //"client " , "Developer" , "Admin"
+        public string role { get; set; }   //"client " , "Developer" , "Admin"
 
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;

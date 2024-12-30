@@ -50,7 +50,7 @@ namespace OutsourcingSystem.Services
                     Name = user.Name,
                     Email = user.Email,
                     Password = user.Password,
-                    Role = user.Role,
+                     role = user.role,
                     CreatedAt = user.CreatedAt,
                 };
 
@@ -68,6 +68,7 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
         }
+       
 
         public User Login(string email, string password)
         {
@@ -179,30 +180,43 @@ namespace OutsourcingSystem.Services
             try
             {
                 var userToUpdate = _userrepo.GetUserById(userIdFromToken);
+
                 if (userToUpdate == null)
                 {
                     throw new Exception("User not found.");
                 }
 
-                if (userToUpdate.IsDeleted == true)
+                if (userToUpdate.IsDeleted==true)
                 {
                     throw new Exception("Cannot update a deleted account. Please log out.");
                 }
+
+                // Validate if any update fields are provided
+                bool isUpdated = false;
 
                 // Update only allowed fields
                 if (!string.IsNullOrEmpty(updateRequest.Name))
                 {
                     userToUpdate.Name = updateRequest.Name;
+                    isUpdated = true;
                 }
+
                 if (!string.IsNullOrEmpty(updateRequest.Email))
                 {
                     userToUpdate.Email = updateRequest.Email;
+                    isUpdated = true;
                 }
 
-                // Update the timestamp 
+                // If no updates are provided, throw an error
+                if (!isUpdated)
+                {
+                    throw new Exception("No update fields provided. Please provide at least one field to update.");
+                }
+
+                // Update the timestamp
                 userToUpdate.UpdatedAt = DateTime.Now;
 
-                // Save changes 
+                // Save changes
                 _userrepo.Update(userToUpdate);
                 return true;
             }

@@ -1,6 +1,6 @@
 ﻿namespace OutsourcingSystem.DTOs
 {
-    public class SkillOutDTO
+    public class ExampleDTO
     {
     }
 }

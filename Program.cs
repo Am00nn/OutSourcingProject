@@ -1,5 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
+using OutsourcingSystem.Repositories;
+using OutsourcingSystem.Services;
 
 namespace OutsourcingSystem
 {
@@ -16,6 +18,9 @@ namespace OutsourcingSystem
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddScoped<IClientRepository , ClientRepository>();
+            builder.Services.AddScoped<IClientService, ClientService>();
 
             var app = builder.Build();
 

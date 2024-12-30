@@ -40,12 +40,6 @@ namespace OutsourcingSystem.Models
         public virtual ICollection<ClientReviewTeam> ClientReviewTeam { get; set; }
 
         public virtual ICollection<FeedbackOnClient> FeedbackOnClient { get; set; }
-
-
-
-
-
-
-
+        public bool IsDeleted { get; internal set; }
     }
 }

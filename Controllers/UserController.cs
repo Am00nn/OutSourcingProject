@@ -60,7 +60,7 @@ namespace OutsourcingSystem.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UID.ToString()), // User ID
                 new Claim(ClaimTypes.Name, user.Name),                    // User Name
-                new Claim(ClaimTypes.Role, user.Role.ToString()) ,
+                new Claim(ClaimTypes.Role, user.role.ToString()) ,
                 new Claim("UID", user.UID.ToString())// User Role (Admin/NormalUser)
             };
 
@@ -69,7 +69,7 @@ namespace OutsourcingSystem.Controllers
                         return Ok(new
                         {
                             Token = token,
-                            Role = user.Role.ToString(),         // Return the user's role
+                            Role = user.role.ToString(),         // Return the user's role
                             Message = "Login successful."
                         });
                     }
@@ -109,7 +109,7 @@ namespace OutsourcingSystem.Controllers
                 {
                     // Extract claims from the token
                     var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+                    var userRole = User.FindFirst(ClaimTypes.Role.ToString())?.Value;
 
                     if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userRole))
                     {
@@ -157,7 +157,7 @@ namespace OutsourcingSystem.Controllers
             try
             {
                 // Extract role and user ID from the token
-                var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role.ToString())?.Value;
                 var userIdFromToken = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 
                 // Call the service with extracted values

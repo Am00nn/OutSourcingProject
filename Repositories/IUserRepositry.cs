@@ -12,5 +12,6 @@ namespace OutsourcingSystem.Repositories
         User GetUserByPassword(string password);
         void Update(User user);
         public bool Delete(User user);
+        public bool DoesEmailExist(string email);
     }
 }

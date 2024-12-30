@@ -72,7 +72,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [HttpGet("Get Skills")] //Gets all skills allowing for filtering using if the account is active and when it was created as non compulsury inputs 
-        public IActionResult GetSkills( bool? active, DateTime? createdAt, int Page = 1, int PageSize =100) //Allows the user to input 
+        public IActionResult GetSkills( bool? active, DateTime? createdAt, int Page = 0, int PageSize =100) //Allows the user to input 
         {
             try
             {

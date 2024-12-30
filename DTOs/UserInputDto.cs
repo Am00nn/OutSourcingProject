@@ -1,16 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OutsourcingSystem.Models
+namespace OutsourcingSystem.DTOs
 {
-    public class User
+    public class UserInputDto
     {
 
-        [Key]
-        public int UID { get; set; }  
 
-        
-        [Required(ErrorMessage ="Name is required")]
-        [MaxLength(100, ErrorMessage ="Nmae cannot more than 100 characters")]
+        [Required(ErrorMessage = "Name is required")]
+        [MaxLength(100, ErrorMessage = "Nmae cannot more than 100 characters")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
@@ -24,21 +21,12 @@ namespace OutsourcingSystem.Models
 
 
 
-        [Required(ErrorMessage ="Role is Required ")]
+        [Required(ErrorMessage = "Role is Required ")]
 
         public string Role { get; set; }    //"client " , "Developer" , "Admin"
 
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        public DateTime? UpdatedAt { get; set; }
-
-        public bool? IsDeleted { get; set; }
-        
-
-
-
-
 
     }
 }

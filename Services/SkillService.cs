@@ -81,7 +81,9 @@ namespace OutsourcingSystem.Services
             // Filters by created at if provided 
             if (createdAt.HasValue)
             {
-                skills = skills.Where(s => s.CreatedAt == createdAt).ToList();
+                string dateOnly = createdAt?.ToString("yyyy-MM-dd"); //removing the time so that only the dates are being compared
+                skills = skills.Where(s => s.CreatedAt.ToString("yyyy-MM-dd") //also removing the time from the actual date added to ensure that they are equal
+                == dateOnly).ToList();
             }
 
             // Paginating results and returning 

@@ -29,8 +29,10 @@ namespace OutsourcingSystem.Models
 
         [Range(0, int.MaxValue, ErrorMessage = "Completed projects must be a non-negative number.")]
         public int CompletedProjects { get; set; } = 0;
-
+        public bool Active { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime ModifiedAt { get; set; } = DateTime.Now;
+        public int ModifiedBy { get; set; }
 
         public virtual ICollection<TeamMember> TeamMembers { get; set; }
 

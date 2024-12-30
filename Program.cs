@@ -2,6 +2,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using OutsourcingSystem.Repositories;
+using OutsourcingSystem.Services;
 
 namespace OutsourcingSystem
 {

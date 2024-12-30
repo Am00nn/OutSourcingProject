@@ -17,7 +17,7 @@ namespace OutsourcingSystem.Models
 
         [ForeignKey(nameof(Teams))]
         public int? TeamID { get; set; }
-        public Teams Teams { get; set; }
+        public Team Teams { get; set; }
 
         [Required(ErrorMessage = "Project name is required.")]
         [MaxLength(100, ErrorMessage = "Project name cannot exceed 100 characters.")]

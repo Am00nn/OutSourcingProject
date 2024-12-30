@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OutsourcingSystem;
 
@@ -11,9 +12,11 @@ using OutsourcingSystem;
 namespace OutsourcingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241229105004_AddIsdeleted")]
+    partial class AddIsdeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -374,15 +377,10 @@ namespace OutsourcingSystem.Migrations
                     b.Property<int>("TeamID")
                         .HasColumnType("int");
 
-                    b.Property<int>("DeveloperID")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("JoinedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("TeamID", "DeveloperID");
-
-                    b.HasIndex("DeveloperID");
+                    b.HasKey("TeamID");
 
                     b.ToTable("TeamMember");
                 });
@@ -440,7 +438,7 @@ namespace OutsourcingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsDeleted")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
@@ -456,7 +454,7 @@ namespace OutsourcingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("UID");
@@ -611,19 +609,11 @@ namespace OutsourcingSystem.Migrations
 
             modelBuilder.Entity("OutsourcingSystem.Models.TeamMember", b =>
                 {
-                    b.HasOne("OutsourcingSystem.Models.Developer", "Developer")
-                        .WithMany()
-                        .HasForeignKey("DeveloperID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OutsourcingSystem.Models.Teams", "Team")
                         .WithMany("TeamMembers")
                         .HasForeignKey("TeamID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Developer");
 
                     b.Navigation("Team");
                 });

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OutsourcingSystem.Models
 {
-    public class Teams
+    public class Team
     {
         [Key]
         public int TeamID { get; set; }

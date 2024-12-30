@@ -19,7 +19,7 @@ namespace OutsourcingSystem.Models
 
         [ForeignKey(nameof(Team))]
         public int? TeamID { get; set; }
-        public Teams Team { get; set; }
+        public Team Team { get; set; }
 
         [Required(ErrorMessage = "Rating is required.")]
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]

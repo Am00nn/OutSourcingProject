@@ -9,7 +9,7 @@ namespace OutsourcingSystem.Models
         
         [ForeignKey(nameof(Team))]
         public int TeamID { get; set; }
-        public Teams Team { get; set; }
+        public Team Team { get; set; }
 
         //[Key]
       

@@ -27,8 +27,8 @@ namespace OutsourcingSystem
         public DbSet<DeveloperSkill> DeveloperSkill { get; set; }
         public DbSet<FeedbackOnClient> FeedbackOnClient { get; set; }
         public DbSet<Project> Project { get; set; }
-        public DbSet<Skills> Skills { get; set; }
-        public DbSet<Teams> Teams { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMember> TeamMember { get; set; }
 
 

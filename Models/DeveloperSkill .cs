@@ -17,7 +17,7 @@ namespace OutsourcingSystem.Models
         
         [ForeignKey(nameof(Skills))]
         public int SkillID { get; set; }
-        public Skills Skills { get; set; }
+        public Skill Skills { get; set; }
 
 
 

@@ -2,7 +2,7 @@
 
 namespace OutsourcingSystem.Models
 {
-    public class Skills
+    public class Skill
     {
 
         [Key]

@@ -2,10 +2,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using OutsourcingSystem.Repositories;
-using OutsourcingSystem.Services;
 
 namespace OutsourcingSystem
 {
@@ -30,7 +26,8 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IUserServices, UserServices>();
 
-
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IClientService, ClientService>();
 
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>

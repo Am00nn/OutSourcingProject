@@ -42,6 +42,7 @@ namespace OutsourcingSystem.Models
         public virtual ICollection<FeedbackOnClient> FeedbackOnClient { get; set; }
         public bool IsDeleted { get;  set; }
         public bool IsApprove { get; set; } = false;
+        public int? ApproveBy {  get; set; }
         
 
     }

@@ -11,5 +11,7 @@ namespace OutsourcingSystem.Repositories
         IEnumerable<Client> GetByRating(decimal rating);
         void SoftDelete(Client client);
         void Update(Client client);
+        public Client GetByuid(int id);
+        public IEnumerable<Client> GetUnapprovedClients();
     }
 }

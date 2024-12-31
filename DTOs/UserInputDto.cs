@@ -22,13 +22,18 @@ namespace OutsourcingSystem.DTOs
         public string Password { get; set; }
 
 
-
-        [Required(ErrorMessage = "Role is Required ")]
-
-        public string role { get; set; }   //"client " , "Developer" , "Admin"
+        [Required(ErrorMessage = "Role is required.")]
+        [RegularExpression("^(Developer|Admin|Client)$", ErrorMessage = "The role must be one of the following: Developer, Admin, Client.")]
+        public string role { get; set; }  //"client " , "Developer" , "Admin"
 
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+       // public int userid { get; set; }
+        public string CompanyName { get; set; }
+        public string Industry { get; set; }
+        public decimal? Rating { get; set; }
+        public string Notes { get; set; }
+        public DateTime CreatedAtClient { get; set; }
 
     }
 }

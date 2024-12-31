@@ -1,4 +1,5 @@
-﻿using OutsourcingSystem.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystem.Models;
 using System;
 
 namespace OutsourcingSystem.Repositories
@@ -78,12 +79,19 @@ namespace OutsourcingSystem.Repositories
                 _context.Client.Add(client);
                 _context.SaveChanges(); // Saves changes  after adding
             }
+            catch (DbUpdateException dbEx)
+            {
+                Console.WriteLine($"Database Update Exception: {dbEx.Message}");
+                Console.WriteLine($"Inner exception: {dbEx.InnerException?.Message}");
+                throw new Exception("Database error while adding a new client.", dbEx);
+            }
             catch (Exception ex)
             {
-
+                Console.WriteLine($"General error: {ex.Message}");
                 throw new Exception("An error occurred while adding a new client.", ex);
             }
         }
+    
 
         // Updates  client in the database and saves change
 

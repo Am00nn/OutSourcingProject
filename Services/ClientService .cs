@@ -7,42 +7,92 @@ namespace OutsourcingSystem.Services
     public class ClientService : IClientService
     {
         private readonly IClientRepository _clientRepository;
+        private readonly IUserRepositry _userRepositry;
 
-
-        public ClientService(IClientRepository clientRepository)
+        public ClientService(IClientRepository clientRepository, IUserRepositry userRepositry)
         {
 
-
+            _userRepositry= userRepositry;
             _clientRepository = clientRepository;
 
 
         }
 
-        public void RegisterClient(ClientDTO clientDto)
+        public void RegisterClient(UserInputDto client)
         {
             // Validate the input DTO to ensure it is not null
 
-            if (clientDto == null)
-                throw new ArgumentNullException(nameof(clientDto), "Client data cannot be null.");
+            if (client == null)
+                throw new ArgumentNullException(nameof(client), "Client data cannot be null.");
 
             // Check that the CompanyName is provided and not  null
 
-            if (string.IsNullOrEmpty(clientDto.CompanyName))
+            if (string.IsNullOrEmpty(client.CompanyName))
 
                 throw new ArgumentException("Company name is required.");
+
+            var existingUserByEmail = _userRepositry.GetUserByEmail(client.Email);
+            if (existingUserByEmail != null)
+            {
+                throw new ArgumentException("A user with this email already exists.");
+            }
+
+            // Check for duplicate password
+            var existingUserByPassword = _userRepositry.GetUserByPassword(client.Password);
+            if (existingUserByPassword != null)
+            {
+                throw new ArgumentException("A user with this password already exists. Please choose a different password.");
+            }
+
+            // Validate CompanyName
+            if (string.IsNullOrWhiteSpace(client.CompanyName))
+            {
+                throw new ArgumentException("Company name is required.");
+            }
+            if (client.CompanyName.Length > 100)
+            {
+                throw new ArgumentException("Company name cannot be more than 100 characters.");
+            }
+
+            // Validate Industry
+            if (!string.IsNullOrEmpty(client.Industry) && client.Industry.Length > 100)
+            {
+                throw new ArgumentException("Industry name cannot be more than 100 characters.");
+            }
+
+           
+            // Validate Notes
+            if (!string.IsNullOrEmpty(client.Notes) && client.Notes.Length > 1000)
+            {
+                throw new ArgumentException("Notes cannot be more than 1000 characters.");
+            }
 
             try
             {
                 // Map the data from ClientDTO to a new Client 
-                var client = new Client
+
+                client.Password = BCrypt.Net.BCrypt.HashPassword(client.Password);
+                var user = new User
                 {
-                    CompanyName = clientDto.CompanyName, // Assign company name 
-                    Industry = clientDto.Industry,       // Assign industry 
+                    Name = client.Name,
+                    Email = client.Email,
+                    Password = client.Password,
+                    role = client.role,
+                    CreatedAt = client.CreatedAtClient,
+                };
+                // Add the new client entity to the repository
+                int userID = _userRepositry.AddUserInt(user);
+
+                var Clienet = new Client
+                {
+                    UID = userID,
+                    CompanyName = client.CompanyName, // Assign company name 
+                    Industry = client.Industry,       // Assign industry 
+                    Notes = client.Notes,
                     CreatedAt = DateTime.Now             //  date is current time
                 };
-
-                // Add the new client entity to the repository
-                _clientRepository.Add(client);
+                _clientRepository.Add(Clienet);
+              
 
 
             }

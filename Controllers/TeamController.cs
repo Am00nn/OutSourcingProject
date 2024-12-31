@@ -88,7 +88,7 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
-
+        [Authorize(Roles = "Admin, Client")]
         [HttpGet("Get Teams")] //Gets all teams allowing for filtering using non compulsury inputs 
         public IActionResult GetSkills(bool? active, int? completedProjects, int? rating, int? hourlyRate, int Page = 0, int PageSize = 100) 
         {

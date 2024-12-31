@@ -26,6 +26,7 @@ namespace OutsourcingSystem.DTOs
         [RegularExpression("^(Developer|Admin|Client)$", ErrorMessage = "The role must be one of the following: Developer, Admin, Client.")]
         public string role { get; set; }  //"client " , "Developer" , "Admin"
 
+         
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
        // public int userid { get; set; }

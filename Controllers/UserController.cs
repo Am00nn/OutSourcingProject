@@ -71,6 +71,21 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
+
+        //[HttpPost("ApproveClient")]
+        //public IActionResult ApproveClient(ApprovalDto approval)
+        //{
+        //    try
+        //    {
+        //        _clientService.ApproveClient(approval);
+        //        return Ok("Client approval status updated successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
+
         [AllowAnonymous]
             [HttpPost("Login")]
             [ProducesResponseType(StatusCodes.Status200OK)] // For successful login

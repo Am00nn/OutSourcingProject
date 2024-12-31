@@ -38,7 +38,7 @@ namespace OutsourcingSystem.Models
 
         public bool? IsDeleted { get; set; }
 
-        public bool IsUserApproved { get; set; } = false; // Default to false for all users except Super Admin
+
 
 
 

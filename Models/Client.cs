@@ -9,7 +9,7 @@ namespace OutsourcingSystem.Models
         public int ClientID { get; set; }
 
         [Required]
-        [ForeignKey(nameof(User))]
+        [ForeignKey("User")]
         public int UID { get; set; }
         public User User { get; set; }
 
@@ -28,7 +28,7 @@ namespace OutsourcingSystem.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-       
+      
         public virtual ICollection<Project> Projects { get; set; }
 
         public virtual ICollection<ClientRequestDeveloper> ClientRequestDeveloper { get; set; }
@@ -40,7 +40,6 @@ namespace OutsourcingSystem.Models
         public virtual ICollection<ClientReviewTeam> ClientReviewTeam { get; set; }
 
         public virtual ICollection<FeedbackOnClient> FeedbackOnClient { get; set; }
-        public bool IsDeleted { get; internal set; }
-       
+        public bool IsDeleted { get;  set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using OutsourcingSystem.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystem.Models;
 
 namespace OutsourcingSystem.Repositories
 {
@@ -27,6 +28,24 @@ namespace OutsourcingSystem.Repositories
                 // Optionally, you could throw the exception to be handled by a higher level
                 throw new Exception("An error occurred while adding the user.", ex);
             }
+        }
+        //to get the id user
+        public int AddUserInt(User user)
+        {
+            try
+            {
+                // Add the user to the context and save changes to the database
+                _context.Users.Add(user);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception (could be a database error, validation error, etc.)
+                Console.WriteLine($"An error occurred while adding the user: {ex.Message}");
+                // Optionally, you could throw the exception to be handled by a higher level
+                throw new Exception("An error occurred while adding the user.", ex);
+            }
+            return user.UID;
         }
         public User GetUser(string email, string password)
         {
@@ -98,6 +117,9 @@ namespace OutsourcingSystem.Repositories
         {
             return _context.Users.Any(u => u.Email == email);
         }
-
+        public bool UserExists(int userId)
+        {
+            return _context.Users.Any(u => u.UID == userId);
+        }
     }
 }

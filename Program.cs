@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OutsourcingSystem.Models;
 using OutsourcingSystem.Repositories;
 using OutsourcingSystem.Services;
 
@@ -24,11 +25,11 @@ namespace OutsourcingSystem
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IUserRepositry, UserRepositry>();
-            builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+          //  builder.Services.AddScoped<ISkillRepository, SkillRepository>();
             builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
             builder.Services.AddScoped<ITeamService, TeamService>();
-            builder.Services.AddScoped<ISkillService, SkillService>();
+         //   builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IUserServices, UserServices>();
 
             builder.Services.AddScoped<IClientRepository, ClientRepository>();

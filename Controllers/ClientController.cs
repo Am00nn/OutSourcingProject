@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Models;
 using OutsourcingSystem.Services;
 
 namespace OutsourcingSystem.Controllers
 {
+   
     [ApiController]
     [Route("api/clients")]
     public class ClientController : ControllerBase
@@ -45,6 +47,7 @@ namespace OutsourcingSystem.Controllers
        // Update  client data
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Client")]
         public IActionResult UpdateClient(int id, [FromBody] ClientDTO clientDto)
         {
             // Check if the provided client data is null a
@@ -80,6 +83,7 @@ namespace OutsourcingSystem.Controllers
         //Delete client data
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Client")]
         public IActionResult SoftDeleteClient(int id)
         {
             try
@@ -102,7 +106,11 @@ namespace OutsourcingSystem.Controllers
                 return StatusCode(500, $"An error occurred while soft-deleting the client: {ex.Message}");
             }
         }
+       
+        
         [HttpGet]
+
+        [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetAllClients(
          [FromQuery] string name,
          [FromQuery] string industry,
@@ -143,6 +151,7 @@ namespace OutsourcingSystem.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientById(int id)
         {
             try
@@ -163,6 +172,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [HttpGet("by-industry")]
+        [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientsByIndustry([FromQuery] string industry)
         {
             if (string.IsNullOrEmpty(industry))
@@ -181,9 +191,11 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
+       
 
 
         [HttpGet("by-rating")]
+        [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientsByRating([FromQuery] decimal rating)
         {
             if (rating < 0)

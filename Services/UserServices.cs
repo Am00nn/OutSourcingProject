@@ -1,4 +1,5 @@
-﻿using OutsourcingSystem.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Migrations;
 using OutsourcingSystem.Models;
 using OutsourcingSystem.Repositories;
@@ -17,7 +18,7 @@ namespace OutsourcingSystem.Services
             _userrepo = userrepo;
         }
 
-        public void AddUser(UserInputDto user)
+        public int AddUser(UserInputDto user)
         {
             try
             {
@@ -40,6 +41,12 @@ namespace OutsourcingSystem.Services
                 {
                     throw new ArgumentException("A user with this password already exists. Please choose a different password.");
                 }
+                //validate role 
+                var validRoles = new[] { "Developer", "Admin", "Client" };
+                if (string.IsNullOrWhiteSpace(user.role) || !validRoles.Contains(user.role))
+                {
+                    throw new ArgumentException("The role must be one of the following: Developer, Admin, Client.");
+                }
 
                 // Hash the password
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
@@ -56,6 +63,7 @@ namespace OutsourcingSystem.Services
 
                 // Calls the AddUser method of the IUserRepo implementation
                 _userrepo.AddUser(completeUser);
+                return completeUser.UID;
             }
             catch (ArgumentException ex)
             {
@@ -68,8 +76,11 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
         }
-       
-
+      
+       public bool UserExists(int userId)
+        {
+            return _userrepo.UserExists(userId);
+        }
         public User Login(string email, string password)
         {
             try
@@ -146,7 +157,7 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
         }
-
+         
         public bool DeleteUser(string role, int userIdFromToken)
         {
             try

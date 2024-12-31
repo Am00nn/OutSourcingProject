@@ -18,28 +18,60 @@ namespace OutsourcingSystem.Controllers
         {
             private readonly IUserServices _userService;
             private readonly IConfiguration _configuration;
-            public UserController(IUserServices userService, IConfiguration configuration)
+        private readonly IClientService _clientService;
+
+
+            public UserController(IUserServices userService, IConfiguration configuration, IClientService clientService)
             {
-                _userService = userService;
+            _clientService=clientService;
+              _userService = userService;
                 _configuration = configuration;
 
             }
-            [AllowAnonymous]
-            [HttpPost("AddUSER")]
-            public IActionResult addUser(UserInputDto user)
+        [AllowAnonymous]
+        [HttpPost("AddUser")]
+        public IActionResult AddUser(UserInputDto user)
+        {
+            try
             {
-                try
+                var userId = _userService.AddUser(user); // Assume AddUser returns the newly created UserId.
+                return Ok(new
                 {
-                    _userService.AddUser(user);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
-
-                return Ok("User added successfully.");
+                    Message = "User added successfully.",
+                    UserId = userId // Returning UserId to be used for adding client details.
+                });
             }
-            [AllowAnonymous]
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("AddClient")]
+        public IActionResult AddClient(UserInputDto client)
+        {
+            try
+            {
+                // Validate that the UserId exists in the User table.
+                //var userExists = _userService.UserExists(clienet.userid); // Check if UserId is valid.
+                //if (!userExists)
+                //{
+                //    return BadRequest(new { Error = "Invalid UserId. User does not exist." });
+                //}
+                // Add client details to the database.
+                //_userService.AddUser(user);
+                _clientService.RegisterClient(client);
+
+                return Ok("Client details added successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        [AllowAnonymous]
             [HttpPost("Login")]
             [ProducesResponseType(StatusCodes.Status200OK)] // For successful login
             [ProducesResponseType(StatusCodes.Status400BadRequest)] // For invalid credentials

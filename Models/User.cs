@@ -26,8 +26,9 @@ namespace OutsourcingSystem.Models
 
 
 
-        [Required(ErrorMessage = "Role is Required ")]
-
+     
+        [Required(ErrorMessage = "Role is required.")]
+        [RegularExpression("^(Developer|Admin|Client)$", ErrorMessage = "The role must be one of the following: Developer, Admin, Client.")]
         public string role { get; set; }   //"client " , "Developer" , "Admin"
 
 

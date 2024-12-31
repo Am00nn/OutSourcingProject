@@ -41,5 +41,6 @@ namespace OutsourcingSystem.Models
 
         public virtual ICollection<FeedbackOnClient> FeedbackOnClient { get; set; }
         public bool IsDeleted { get; internal set; }
+       
     }
 }

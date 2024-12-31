@@ -2,20 +2,18 @@
 
 namespace OutsourcingSystem.Repositories
 {
-    public class RequestRepository : IRequestRepository
+    public class ClientRequestRepository : IClientRequestRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public RequestRepository(ApplicationDbContext context)
+        public ClientRequestRepository(ApplicationDbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _context = context;
         }
 
+        
         public void AddDeveloperRequest(ClientRequestDeveloper request)
         {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request), "Developer request cannot be null.");
-
             try
             {
                 _context.ClientRequestDeveloper.Add(request);
@@ -23,78 +21,106 @@ namespace OutsourcingSystem.Repositories
             }
             catch (Exception ex)
             {
-
-                throw new Exception("An error happen while adding a developer request.", ex);
+                throw new Exception("An error occurred while adding the developer request.", ex);
             }
         }
 
+        
         public void AddTeamRequest(ClientRequestTeam request)
         {
-            if (request == null)
-                throw new ArgumentNullException(nameof(request), "Team request cannot be null.");
-
             try
             {
                 _context.ClientRequestTeam.Add(request);
-
                 _context.SaveChanges();
             }
             catch (Exception ex)
             {
-                // Log the exception
-                throw new Exception("An error happen while adding a team request.", ex);
+                throw new Exception("An error occurred while adding the team request.", ex);
             }
         }
 
-        public IEnumerable<ClientRequestDeveloper> GetDeveloperRequests()
+       
+        public ClientRequestDeveloper GetDeveloperRequestById(int requestId)
         {
             try
             {
-
-                return _context.ClientRequestDeveloper.ToList();
-
+                return _context.ClientRequestDeveloper.FirstOrDefault(r => r.RequestID == requestId);
             }
             catch (Exception ex)
             {
-
-
-                throw new Exception("An error happen while retrieving developer requests.", ex);
-
-
+                throw new Exception($"An error occurred while retrieving the developer request with ID {requestId}.", ex);
             }
         }
 
-        public IEnumerable<ClientRequestTeam> GetTeamRequests()
+        
+        public ClientRequestTeam GetTeamRequestById(int requestId)
         {
             try
             {
-                return _context.ClientRequestTeam.ToList();
+                return _context.ClientRequestTeam.FirstOrDefault(r => r.RequestID == requestId);
             }
             catch (Exception ex)
             {
-
-                throw new Exception("An error happen while retrieving team requests.", ex);
+                throw new Exception($"An error occurred while retrieving the team request with ID {requestId}.", ex);
             }
         }
 
-        public dynamic GetRequestById(int requestId)
+       
+        public IEnumerable<ClientRequestDeveloper> GetDeveloperRequestsByClientId(int clientId)
         {
             try
             {
-                var developerRequest = _context.ClientRequestDeveloper.FirstOrDefault(r => r.RequestID == requestId);
-
-                var teamRequest = _context.ClientRequestTeam.FirstOrDefault(r => r.RequestID == requestId);
-
-                return developerRequest ?? teamRequest as dynamic;
+                return _context.ClientRequestDeveloper.Where(r => r.ClientID == clientId).ToList();
             }
             catch (Exception ex)
             {
-
-                throw new Exception($"An error occurred while get the request with ID {requestId}.", ex);
+                throw new Exception($"An error occurred while retrieving developer requests for client ID {clientId}.", ex);
             }
         }
 
+        
+        public IEnumerable<ClientRequestTeam> GetTeamRequestsByClientId(int clientId)
+        {
+            try
+            {
+                return _context.ClientRequestTeam.Where(r => r.ClientID == clientId).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while retrieving team requests for client ID {clientId}.", ex);
+            }
+        }
 
+      
+        public void UpdateDeveloperRequest(ClientRequestDeveloper request)
+        {
+            try
+            {
+                _context.ClientRequestDeveloper.Update(request);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the developer request.", ex);
+            }
+        }
 
+        
+        public void UpdateTeamRequest(ClientRequestTeam request)
+        {
+            try
+            {
+                _context.ClientRequestTeam.Update(request);
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the team request.", ex);
+            }
+        }
     }
+
+
+
 }
+

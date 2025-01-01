@@ -70,7 +70,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("UID");
 
-                    b.ToTable("Client", (string)null);
+                    b.ToTable("Client");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientRequestDeveloper", b =>
@@ -104,7 +104,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("UID");
 
-                    b.ToTable("ClientRequestDeveloper", (string)null);
+                    b.ToTable("ClientRequestDeveloper");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientRequestTeam", b =>
@@ -143,7 +143,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TID");
 
-                    b.ToTable("ClientRequestTeam", (string)null);
+                    b.ToTable("ClientRequestTeam");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientReviewDeveloper", b =>
@@ -177,7 +177,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("DeveloperID");
 
-                    b.ToTable("ClientReviewDeveloper", (string)null);
+                    b.ToTable("ClientReviewDeveloper");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientReviewTeam", b =>
@@ -211,7 +211,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("ClientReviewTeam", (string)null);
+                    b.ToTable("ClientReviewTeam");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Developer", b =>
@@ -269,7 +269,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Developer", (string)null);
+                    b.ToTable("Developer");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.DeveloperSkill", b =>
@@ -287,7 +287,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("SkillID");
 
-                    b.ToTable("DeveloperSkill", (string)null);
+                    b.ToTable("DeveloperSkill");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.FeedbackOnClient", b =>
@@ -326,7 +326,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("FeedbackOnClient", (string)null);
+                    b.ToTable("FeedbackOnClient");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Project", b =>
@@ -377,7 +377,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("TeamID");
 
-                    b.ToTable("Project", (string)null);
+                    b.ToTable("Project");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Skill", b =>
@@ -406,7 +406,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasKey("SkillID");
 
-                    b.ToTable("Skills", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Team", b =>
@@ -453,7 +453,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasKey("TeamID");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.TeamMember", b =>
@@ -471,7 +471,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasIndex("DeveloperID");
 
-                    b.ToTable("TeamMember", (string)null);
+                    b.ToTable("TeamMember");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.User", b =>
@@ -510,7 +510,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasKey("UID");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("OutsourcingSystem.Models.Client", b =>

@@ -67,7 +67,7 @@ namespace OutsourcingSystem.Services
                 var request = new ClientRequestTeam
                 {
                     ClientID = clientId,
-                   // TeamID = requestModel.TeamID.Value,
+                    TID = requestModel.TeamID.Value,
                     StartDate = requestModel.StartDate,
                     EndDate = requestModel.EndDate,
                     Status = "Pending"

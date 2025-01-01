@@ -90,33 +90,33 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
-        //[HttpGet("GetUnapprovedDeveloper")]
-        //public IActionResult GetUnapproveDeveloper()
-        //{
-        //    try
-        //    {
-        //        //var unapproveddeveloper = _userService.GetUnapprovedDeveloper(User);
-        //        //return Ok(unapproveddeveloper);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { Error = ex.Message });
-        //    }
-        //}
-        //[HttpPost("ApproveDeveloper")]
-        //public IActionResult ApproveDeveloper(ApproveDeveloper approval)
-        //{
-        //    try
-        //    {
-        //        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //        _userService.Approvedeveloper(approval, User, int.Parse(userId));
-        //        return Ok("Client approval status updated successfully.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { Error = ex.Message });
-        //    }
-        //}
+        [HttpGet("GetUnapprovedDeveloper")]
+        public IActionResult GetUnapproveDeveloper()
+        {
+            try
+            {
+                var unapproveddeveloper = _userService.GetUnapprovedDeveloper(User);
+                return Ok(unapproveddeveloper);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+        [HttpPost("ApproveDeveloper")]
+        public IActionResult ApproveDeveloper(ApproveDeveloper approval)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                _userService.Approvedeveloper(approval, User, int.Parse(userId));
+                return Ok("develope approval status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
 
 
 

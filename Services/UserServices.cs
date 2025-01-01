@@ -150,22 +150,22 @@ namespace OutsourcingSystem.Services
             developer.IsApprove = approval.IsApprove;
             developer.IsApproveBy = userid;
 
-            //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
-           // _clientRepository.Update(client);
+          
+            _developerrepo.Update( developer);
         }
 
 
 
 
-        //public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
-        //{
-        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-        //    if (!isAdmin)
-        //    {
-        //        throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
-        //    }
-        //    return _clientRepository.GetUnapprovedClients();
-        //}
+        public IEnumerable<Developer> GetUnapprovedDeveloper(ClaimsPrincipal user)
+        {
+            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            if (!isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+            }
+            return _developerrepo.GetUnapproveddeveloper();
+        }
 
 
 
@@ -196,6 +196,12 @@ namespace OutsourcingSystem.Services
 
                 var client = _clientRepository.GetByuid(user.UID); // Assuming UserId matches Client's UID
                 if (client != null && !client.IsApprove)
+                {
+                    throw new InvalidOperationException("Your account has not been approved by an admin yet.");
+                }
+
+                var developer = _developerrepo.GetById(user.UID); // Assuming UserId matches Client's UID
+                if (developer != null && !developer.IsApprove)
                 {
                     throw new InvalidOperationException("Your account has not been approved by an admin yet.");
                 }

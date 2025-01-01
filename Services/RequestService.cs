@@ -1,182 +1,146 @@
-﻿using Azure.Core;
-using OutsourcingSystem.DTOs;
-using OutsourcingSystem.Models;
-using OutsourcingSystem.Repositories;
+﻿using OutsourcingSystem.Models;
+using System.Security.Claims;
 
 namespace OutsourcingSystem.Services
 {
     public class RequestService : IRequestService
     {
-        private readonly IClientRequestRepository _requestRepository;
-        private readonly IEmailService _emailService;
+        private readonly ApplicationDbContext _context;
 
-        public RequestService(IClientRequestRepository requestRepository, IEmailService emailService)
+        public RequestService(ApplicationDbContext context)
         {
-            _requestRepository = requestRepository;
-            _emailService = emailService;
+            _context = context;
         }
 
-        public void SubmitRequest(RequestDTO requestDto, string smtpUsername, string smtpPassword)
+        public string SubmitRequest(ClaimsPrincipal user, SubmitRequestModel requestModel)
         {
-            try
+            var clientId = int.Parse(user.FindFirst("clientID")?.Value);
+            var role = user.FindFirst("role")?.Value;
+
+            if (role != "Client")
             {
-                // chack type of request 
-                if (requestDto.RequestType != "Developer" && requestDto.RequestType != "Team")
-                {
-                    throw new ArgumentException("Invalid request type. Only 'Developer' or 'Team' are allowed.");
-                }
+                throw new UnauthorizedAccessException("Only clients can submit requests.");
+            }
 
-                // Save request on DB 
-                if (requestDto.RequestType == "Developer")
-                {
-                    var developerRequest = new ClientRequestDeveloper
-                    {
-                        ClientID = requestDto.ClientID,
-                        
-                        StartDate = requestDto.StartDate,
-                        
-                        EndDate = requestDto.EndDate,
-                        
-                        Status = "Pending"
-                    };
-                    _requestRepository.AddDeveloperRequest(developerRequest);
-                }
-                else
-                {
-                    var teamRequest = new ClientRequestTeam
-                    {
-                        
-                        ClientID = requestDto.ClientID,
-                       
-                        StartDate = requestDto.StartDate,
-                       
-                        EndDate = requestDto.EndDate,
-                       
-                        Status = "Pending"
-                    };
-                    _requestRepository.AddTeamRequest(teamRequest);
-                }
+            if (requestModel.RequestType == "Developer" && requestModel.DeveloperID == null)
+            {
+                throw new ArgumentException("Please specify a valid Developer ID.");
+            }
 
-                // send email to Admin
-                var emailMessage = new EmailMessage
+            if (requestModel.RequestType == "Team" && requestModel.TeamID == null)
+            {
+                throw new ArgumentException("Please specify a valid Team ID.");
+            }
+
+            if (requestModel.RequestType == "Developer")
+            {
+                var developerExists = _context.Developer.Any(d => d.DeveloperID == requestModel.DeveloperID);
+                if (!developerExists)
                 {
-                   
-                    From = requestDto.ClientEmail,
-                   
-                    To = requestDto.AdminEmail,
-                   
-                    Subject = "New Project Request Submitted",
-                   
-                    Body = $"Client {requestDto.ClientID} has submitted a {requestDto.RequestType} request."
+                    throw new ArgumentException("The specified Developer ID does not exist.");
+                }
+            }
+
+            if (requestModel.RequestType == "Team")
+            {
+                var teamExists = _context.Teams.Any(t => t.TeamID == requestModel.TeamID);
+                if (!teamExists)
+                {
+                    throw new ArgumentException("The specified Team ID does not exist.");
+                }
+            }
+
+            if (requestModel.RequestType == "Developer")
+            {
+                var request = new ClientRequestDeveloper
+                {
+                    ClientID = clientId,
+                   // DeveloperID = requestModel.DeveloperID.Value,
+                    StartDate = requestModel.StartDate,
+                    EndDate = requestModel.EndDate,
+                    Status = "Pending"
                 };
-
-                _emailService.SendEmail(emailMessage, smtpUsername, smtpPassword);
+                _context.ClientRequestDeveloper.Add(request);
             }
-            catch (Exception ex)
+            else if (requestModel.RequestType == "Team")
             {
-                throw new Exception("An error occurred while submitting the request.", ex);
+                var request = new ClientRequestTeam
+                {
+                    ClientID = clientId,
+                   // TeamID = requestModel.TeamID.Value,
+                    StartDate = requestModel.StartDate,
+                    EndDate = requestModel.EndDate,
+                    Status = "Pending"
+                };
+                _context.ClientRequestTeam.Add(request);
             }
+            else
+            {
+                throw new ArgumentException("Invalid request type.");
+            }
+
+            _context.SaveChanges();
+
+            EmailService.SendEmail(
+                "amanialshmali7@gmail.com",
+                "New Request Submitted",
+                $"A new request has been submitted by client ID: {clientId} for type: {requestModel.RequestType}."
+            );
+
+            return "Request submitted successfully.";
         }
 
-        public void ProcessRequest(int requestId, string status, string smtpUsername, string smtpPassword)
+        public string ProcessRequest(int requestId, string requestType, bool isAccepted)
         {
-            try
+            string status = isAccepted ? "Approved" : "Rejected";
+            string clientEmail = string.Empty;
+
+            if (requestType == "Developer")
             {
-                // get request from 
-                var developerRequest = _requestRepository.GetDeveloperRequestById(requestId);
-                var teamRequest = _requestRepository.GetTeamRequestById(requestId);
-
-                if (developerRequest == null && teamRequest == null)
+                var request = _context.ClientRequestDeveloper.Find(requestId);
+                if (request != null)
                 {
-                    throw new KeyNotFoundException($"Request with ID {requestId} not found.");
-                }
+                    request.Status = status;
 
-                // update Status
-                if (developerRequest != null)
-                {
-                   
-                    developerRequest.Status = status;
-                   
-                    _requestRepository.UpdateDeveloperRequest(developerRequest);
+                    clientEmail = _context.Users
+                        .Where(u => u.UID == request.ClientID)
+                        .Select(u => u.Email)
+                        .FirstOrDefault();
                 }
-                else
-                {
-                    teamRequest.Status = status;
-                    _requestRepository.UpdateTeamRequest(teamRequest);
-                }
-
-                // sent email to ClientEmail
-                //This following function will be added after pulling code --needs the user class will update after added
-                
-                //var emailMessage = new EmailMessage
-                //{
-                    
-                //    From = smtpUsername,
-                   
-                //    To = developerRequest != null ? developerRequest.Client.ClientEmail : teamRequest.Client.ClientEmail,
-                   
-                //    Subject = "Request Status Update",
-                   
-                //    Body = $"Your request with ID {requestId} has been {status}."
-                //};
-
-                //_emailService.SendEmail(emailMessage, smtpUsername, smtpPassword);
             }
-            catch (Exception ex)
+            else if (requestType == "Team")
             {
-                throw new Exception("An error occurred while processing the request.", ex);
+                var request = _context.ClientRequestTeam.Find(requestId);
+                if (request != null)
+                {
+                    request.Status = status;
+
+                    clientEmail = _context.Users
+                        .Where(u => u.UID == request.ClientID)
+                        .Select(u => u.Email)
+                        .FirstOrDefault();
+                }
             }
+            else
+            {
+                throw new ArgumentException("Invalid request type.");
+            }
+
+            if (string.IsNullOrEmpty(clientEmail))
+            {
+                throw new ArgumentException("Client email not found.");
+            }
+
+            _context.SaveChanges();
+
+            EmailService.SendEmail(
+                clientEmail,
+                "Request Status",
+                isAccepted ? "Your request has been approved." : "Your request has been rejected."
+            );
+
+            return "Request processed successfully.";
         }
 
-        public IEnumerable<RequestDTO> GetRequestsByClient(int clientId)
-        {
-            try
-            {
-                var developerRequests = _requestRepository.GetDeveloperRequestsByClientId(clientId);
-
-                var teamRequests = _requestRepository.GetTeamRequestsByClientId(clientId);
-
-                var requests = developerRequests.Select(r => new RequestDTO
-                {
-                    RequestID = r.RequestID,
-                   
-                    ClientID = r.ClientID,
-                   
-                    RequestType = "Developer",
-                   
-                    StartDate = r.StartDate,
-                  
-                    EndDate = r.EndDate,
-                   
-                    Status = r.Status
-                }).ToList();
-
-                requests.AddRange(teamRequests.Select(r => new RequestDTO
-                {
-                    
-                    RequestID = r.RequestID,
-                   
-                    ClientID = r.ClientID,
-                    
-                    RequestType = "Team",
-                   
-                    StartDate = r.StartDate,
-                    
-                    EndDate = r.EndDate,
-                    
-                    Status = r.Status
-                }));
-
-                return requests;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while retrieving requests.", ex);
-            }
-        }
     }
-
-
-
 }
-

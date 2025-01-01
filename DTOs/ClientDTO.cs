@@ -2,6 +2,7 @@
 {
     public class ClientDTO
     {
+   
         public int ClientID { get; set; }
         public int userid { get; set; }
         public string CompanyName { get; set; }

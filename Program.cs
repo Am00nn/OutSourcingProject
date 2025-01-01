@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using OutsourcingSystem.Models;
+
 using OutsourcingSystem.Repositories;
 using OutsourcingSystem.Services;
 
@@ -17,28 +17,31 @@ namespace OutsourcingSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-           
 
-           
+
+
 
 
             builder.Services.AddControllers();
 
+
+
             builder.Services.AddScoped<IUserRepositry, UserRepositry>();
-          //  builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+            //  builder.Services.AddScoped<ISkillRepository, SkillRepository>();
             builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
             builder.Services.AddScoped<ITeamService, TeamService>();
-         //   builder.Services.AddScoped<ISkillService, SkillService>();
+            //   builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IUserServices, UserServices>();
 
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<IClientService, ClientService>();
 
+            builder.Services.AddScoped<IClientRepository, ClientRepository>();
+            builder.Services.AddScoped<IClientService, ClientService>();
 
-            builder.Services.AddScoped<IEmailService, EmailService>();
-            builder.Services.AddScoped<IClientRequestRepository, ClientRequestRepository>();
-            builder.Services.AddScoped<IRequestService, RequestService>();
+
+
 
 
 
@@ -47,8 +50,7 @@ namespace OutsourcingSystem
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            //configure the EMailsettings
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -92,17 +94,17 @@ namespace OutsourcingSystem
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] {}
                 }
-            },
-            new string[] {}
-        }
     });
             });
 
@@ -123,6 +125,8 @@ namespace OutsourcingSystem
             app.MapControllers();
 
             app.Run();
+
+
         }
     }
 }

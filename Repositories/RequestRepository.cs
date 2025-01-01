@@ -2,125 +2,57 @@
 
 namespace OutsourcingSystem.Repositories
 {
-    public class ClientRequestRepository : IClientRequestRepository
+    public class RequestRepository : IRequestRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public ClientRequestRepository(ApplicationDbContext context)
+        public RequestRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        
         public void AddDeveloperRequest(ClientRequestDeveloper request)
         {
-            try
-            {
-                _context.ClientRequestDeveloper.Add(request);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while adding the developer request.", ex);
-            }
+            _context.ClientRequestDeveloper.Add(request);
         }
 
-        
         public void AddTeamRequest(ClientRequestTeam request)
         {
-            try
-            {
-                _context.ClientRequestTeam.Add(request);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while adding the team request.", ex);
-            }
+            _context.ClientRequestTeam.Add(request);
         }
 
-       
-        public ClientRequestDeveloper GetDeveloperRequestById(int requestId)
+        public ClientRequestDeveloper GetDeveloperRequest(int requestId)
         {
-            try
-            {
-                return _context.ClientRequestDeveloper.FirstOrDefault(r => r.RequestID == requestId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while retrieving the developer request with ID {requestId}.", ex);
-            }
+            return _context.ClientRequestDeveloper.FirstOrDefault(r => r.RequestID == requestId);
         }
 
-        
-        public ClientRequestTeam GetTeamRequestById(int requestId)
+        public ClientRequestTeam GetTeamRequest(int requestId)
         {
-            try
-            {
-                return _context.ClientRequestTeam.FirstOrDefault(r => r.RequestID == requestId);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while retrieving the team request with ID {requestId}.", ex);
-            }
+            return _context.ClientRequestTeam.FirstOrDefault(r => r.RequestID == requestId);
         }
 
-       
-        public IEnumerable<ClientRequestDeveloper> GetDeveloperRequestsByClientId(int clientId)
+        public bool DeveloperExists(int developerId)
         {
-            try
-            {
-                return _context.ClientRequestDeveloper.Where(r => r.ClientID == clientId).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while retrieving developer requests for client ID {clientId}.", ex);
-            }
+            return _context.Developer.Any(d => d.DeveloperID == developerId);
         }
 
-        
-        public IEnumerable<ClientRequestTeam> GetTeamRequestsByClientId(int clientId)
+        public bool TeamExists(int teamId)
         {
-            try
-            {
-                return _context.ClientRequestTeam.Where(r => r.ClientID == clientId).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred while retrieving team requests for client ID {clientId}.", ex);
-            }
+            return _context.Teams.Any(t => t.TeamID == teamId);
         }
 
-      
-        public void UpdateDeveloperRequest(ClientRequestDeveloper request)
+        public string GetClientEmail(int clientId)
         {
-            try
-            {
-                _context.ClientRequestDeveloper.Update(request);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while updating the developer request.", ex);
-            }
+            return _context.Users
+                .Where(u => u.UID == clientId)
+                .Select(u => u.Email)
+                .FirstOrDefault();
         }
 
-        
-        public void UpdateTeamRequest(ClientRequestTeam request)
+        public void SaveChanges()
         {
-            try
-            {
-                _context.ClientRequestTeam.Update(request);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred while updating the team request.", ex);
-            }
+            _context.SaveChanges();
         }
+
     }
-
-
-
 }
-

@@ -1,54 +1,40 @@
-﻿using DocuSign.eSign.Model;
-using Microsoft.Extensions.Options;
-using OutsourcingSystem.DTOs;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Net;
 
 namespace OutsourcingSystem.Services
 {
-    public class EmailService : IEmailService
+    public class EmailService
     {
-        private readonly IConfiguration _configuration;
+        private static readonly string AdminEmail = "amanialshmali7@gmail.com";
+        private static readonly string AppPassword = "vdim bqox zlbp mgyk";
 
-        public EmailService(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public void SendEmail(EmailMessage message, string smtpUsername, string smtpPassword)
+        public static void SendEmail(string recipient, string subject, string body)
         {
             try
             {
-                var emailSettings = _configuration.GetSection("EmailSettings");
-
-                var smtpHost = emailSettings["SmtpHost"];
-
-                var smtpPort = int.Parse(emailSettings["SmtpPort"]);
-
-                var smtpClient = new SmtpClient(smtpHost, smtpPort)
+                var smtpClient = new SmtpClient("smtp.gmail.com")
                 {
-                    Credentials = new NetworkCredential(smtpUsername, smtpPassword),
-
-                    EnableSsl = true
+                    Port = 587,
+                    Credentials = new NetworkCredential(AdminEmail, AppPassword),
+                    EnableSsl = true,
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(message.From),
-                    Subject = message.Subject,
-                    Body = message.Body,
-                    IsBodyHtml = false
+                    From = new MailAddress(AdminEmail),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true,
                 };
 
-                mailMessage.To.Add(message.To);
+                mailMessage.To.Add(recipient);
 
                 smtpClient.Send(mailMessage);
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while sending the email.", ex);
+                Console.WriteLine($"Email sending failed: {ex.Message}");
             }
         }
     }
-
 }

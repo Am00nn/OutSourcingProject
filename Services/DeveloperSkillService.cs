@@ -66,5 +66,10 @@ namespace OutsourcingSystem.Services
             var skillFound = _DeveloperSkillRepository.CheckDevHasSkill(devID, skillID);
             return skillFound == true ? true : false;
         }
+
+        public List<DeveloperSkill> GetDevelopersBySkill(int skillID)
+        {
+            return _DeveloperSkillRepository.GetDevelopersBySkillID(skillID);
+        }
     }
 }

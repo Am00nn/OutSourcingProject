@@ -9,5 +9,6 @@ namespace OutsourcingSystem.Services
         int DeleteDeveloperSkill(int skillID, int DeveloperID);
         List<DeveloperSkill> GetAllDeveloperSkills(int Page, int PageSize, int? developerID, int? skillID);
         List<DeveloperSkill> GetSkillByDevID(int DevID);
+        List<DeveloperSkill> GetDevelopersBySkill(int skillID);
     }
 }

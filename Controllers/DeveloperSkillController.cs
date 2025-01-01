@@ -58,5 +58,20 @@ namespace OutsourcingSystem.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
+        [Authorize(Roles = "Admin, Client")]
+        [HttpGet("Get Developers By Skill {int SkillID}")]
+        public IActionResult GetDevsBySkill(int SkillID)
+        {
+            try
+            {
+                return Ok(_developerSkillService.GetDevelopersBySkill(SkillID));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -14,6 +14,10 @@ namespace OutsourcingSystem.Models
         public Client Client { get; set; }
 
 
+        [ForeignKey(nameof(developer))]
+        public int UID { get; set; }
+        public Developer developer  { get; set; }
+
 
 
 

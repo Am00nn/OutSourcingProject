@@ -11,12 +11,14 @@ namespace OutsourcingSystem.Services
     {
         private readonly IUserRepositry _userrepo;
         private readonly IClientRepository _clientRepository;
+        private readonly  IDeveloperRepositry _developerrepo;
         // Constructor to inject the IUserRepo dependency
-        public UserServices(IUserRepositry userrepo, IClientRepository clientRepository)
+        public UserServices(IUserRepositry userrepo, IClientRepository clientRepository, IDeveloperRepositry developerrepo )
         {
             // Assigning the injected IUserRepo instance to the private field
             _userrepo = userrepo;
             _clientRepository = clientRepository;
+         _developerrepo = developerrepo;
         }
 
         public int AddUserAdmin(AdminInputDto user)
@@ -78,10 +80,21 @@ namespace OutsourcingSystem.Services
             }
         }
       
+
        public bool UserExists(int userId)
         {
             return _userrepo.UserExists(userId);
         }
+
+
+
+
+
+
+
+
+
+
         public void ApproveClient(ApprovalDto approval, ClaimsPrincipal user, int userid)
         {
             var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
@@ -103,6 +116,62 @@ namespace OutsourcingSystem.Services
             //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
             _clientRepository.Update(client);
         }
+
+
+
+
+        public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
+        {
+            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            if (!isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+            }
+            return _clientRepository.GetUnapprovedClients();
+        }
+
+
+
+        public void Approvedeveloper(ApproveDeveloper approval, ClaimsPrincipal user, int userid)
+        {
+            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
+            if (!isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admin can approve");
+            }
+
+            var developer = _developerrepo.GetById(approval.DeveloperId);
+            if (developer == null)
+            {
+                throw new ArgumentException("developer not found.");
+            }
+
+            developer.IsApprove = approval.IsApprove;
+            developer.IsApproveBy = userid;
+
+            //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
+           // _clientRepository.Update(client);
+        }
+
+
+
+
+        //public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
+        //{
+        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+        //    if (!isAdmin)
+        //    {
+        //        throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+        //    }
+        //    return _clientRepository.GetUnapprovedClients();
+        //}
+
+
+
+
+
+
         public User Login(string email, string password)
         {
             try
@@ -149,15 +218,13 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
         }
-        public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
-        {
-            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-            if (!isAdmin)
-            {
-                throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
-            }
-            return _clientRepository.GetUnapprovedClients();
-        }
+
+
+
+
+
+
+       
         public List<User> GetAllUsers(int userid)
         {
             try

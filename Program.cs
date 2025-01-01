@@ -24,26 +24,26 @@ namespace OutsourcingSystem
 
             builder.Services.AddControllers();
 
-            builder.Services.AddScoped<IUserRepositry, UserRepositry>();
-            builder.Services.AddScoped<ISkillRepository, SkillRepository>();
-            builder.Services.AddScoped<ITeamRepository, TeamRepository>();
-            builder.Services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
-            builder.Services.AddScoped<IClientRepository, ClientRepository>();
-            builder.Services.AddScoped<IDeveloperSkillRepository, DeveloperSkillRepository>();
+           // builder.Services.AddScoped<IUserRepositry, UserRepositry>();
+           // builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+           // builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+           // builder.Services.AddScoped<ITeamMemberRepository, TeamMemberRepository>();
+           // builder.Services.AddScoped<IClientRepository, ClientRepository>();
+           // builder.Services.AddScoped<IDeveloperSkillRepository, DeveloperSkillRepository>();
 
-            builder.Services.AddScoped<IDeveloperSkillService, DeveloperSkillService>();
-            builder.Services.AddScoped<IClientService, ClientService>();
-            builder.Services.AddScoped<ITeamService, TeamService>();
-            builder.Services.AddScoped<ISkillService, SkillService>();
-            builder.Services.AddScoped<IUserServices, UserServices>();
-            builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
-            builder.Services.AddScoped<IJointService, JointService>();
+           // builder.Services.AddScoped<IDeveloperSkillService, DeveloperSkillService>();
+           // builder.Services.AddScoped<IClientService, ClientService>();
+           // builder.Services.AddScoped<ITeamService, TeamService>();
+           // builder.Services.AddScoped<ISkillService, SkillService>();
+           // builder.Services.AddScoped<IUserServices, UserServices>();
+           // builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+           // builder.Services.AddScoped<IJointService, JointService>();
 
          
 
 
            // builder.Services.AddScoped<IEmailService, EmailService>();
-          //  builder.Services.AddScoped<IClientRequestRepository, ClientRequestRepository>();
+           //builder.Services.AddScoped<IClientRequestRepository, ClientRequestRepository>();
            // builder.Services.AddScoped<IRequestService, RequestService>();
 
 

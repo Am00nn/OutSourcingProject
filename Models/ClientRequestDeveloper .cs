@@ -15,7 +15,7 @@ namespace OutsourcingSystem.Models
 
 
         [ForeignKey(nameof(developer))]
-        public int UID { get; set; }
+        public int developerid { get; set; }
         public Developer developer  { get; set; }
 
 

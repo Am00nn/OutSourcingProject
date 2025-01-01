@@ -75,12 +75,12 @@ namespace OutsourcingSystem.Services
                 throw new ArgumentException("Invalid URL format for Document Link.");
 
             // Validate Completed Projects
-            if (input.CompletedProjects < 0)
-                throw new ArgumentException("Completed projects must be a non-negative number.");
+            //if (input.CompletedProjects < 0)
+            //    throw new ArgumentException("Completed projects must be a non-negative number.");
 
             // Validate CanBePartOfTeam
-            if (input.CanBePartOfTeam != true && input.CanBePartOfTeam != false)
-                throw new ArgumentException("CanBePartOfTeam is required and must be true or false.");
+            //if (input.CanBePartOfTeam != true && input.CanBePartOfTeam != false)
+            //    throw new ArgumentException("CanBePartOfTeam is required and must be true or false.");
 
             // Create and add User entity
             var user = new User
@@ -102,10 +102,10 @@ namespace OutsourcingSystem.Services
                 Specialization = input.Specialization,
                 YearsOfExperience = input.YearsOfExperience,
                 HourlyRate = input.HourlyRate,
-                AvailabilityStatus = input.AvailabilityStatus,
+               // AvailabilityStatus = input.AvailabilityStatus,
                 CareerSummary = input.CareerSummary,
-                CompletedProjects = input.CompletedProjects,
-                CanBePartOfTeam = input.CanBePartOfTeam,
+              //  CompletedProjects = input.CompletedProjects,
+               // CanBePartOfTeam = input.CanBePartOfTeam,
                 DocumentLink = input.DocumentLink,
             };
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocuSign.eSign.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OutsourcingSystem.DTOs;
@@ -29,12 +30,12 @@ namespace OutsourcingSystem.Controllers
 
             }
         [AllowAnonymous]
-        [HttpPost("AddUser")]
-        public IActionResult AddUser(UserInputDto user)
+        [HttpPost("AddAdmin")]
+        public IActionResult AddUser(AdminInputDto user)
         {
             try
             {
-                var userId = _userService.AddUser(user); // Assume AddUser returns the newly created UserId.
+                var userId = _userService.AddUserAdmin(user); // Assume AddUser returns the newly created UserId.
                 return Ok(new
                 {
                     Message = "User added successfully.",
@@ -71,20 +72,33 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
-
-        //[HttpPost("ApproveClient")]
-        //public IActionResult ApproveClient(ApprovalDto approval)
-        //{
-        //    try
-        //    {
-        //        _clientService.ApproveClient(approval);
-        //        return Ok("Client approval status updated successfully.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { Error = ex.Message });
-        //    }
-        //}
+        [HttpGet("GetUnapprovedClients")]
+        public IActionResult GetUnapprovedClients()
+        {
+            try
+            {
+                var unapprovedClients = _userService.GetUnapprovedClients(User);
+                return Ok(unapprovedClients);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+        [HttpPost("ApproveClient")]
+        public IActionResult ApproveClient(ApprovalDto approval)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                _userService.ApproveClient(approval,User, int.Parse(userId));
+                return Ok("Client approval status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
 
         [AllowAnonymous]
             [HttpPost("Login")]

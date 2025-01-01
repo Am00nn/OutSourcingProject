@@ -108,7 +108,7 @@ namespace OutsourcingSystem.Repositories
 
         public bool Delete(User user)
         {
-            
+
             _context.Users.Remove(user);
             _context.SaveChanges();
             return true;

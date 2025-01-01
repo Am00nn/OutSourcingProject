@@ -103,6 +103,7 @@ namespace OutsourcingSystem.Services
             }
         }
 
+       
 
         public void UpdateClient(int id, ClientDTO updatedClientDto)
         {
@@ -149,7 +150,18 @@ namespace OutsourcingSystem.Services
                 throw;
             }
         }
+        //public void ApproveClient(ApprovalDto approval)
+        //{
+        //    var client = _clientRepository.GetById(approval.ClientId);
+        //    if (client == null)
+        //    {
+        //        throw new ArgumentException("Client not found.");
+        //    }
 
+        //    client.IsApprove = approval.IsApprove;
+        //  //  client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
+        //    _clientRepository.Update(client);
+        //}
         public void SoftDeleteClient(int id)
         {
             // Validate the client ID to ensure >1 

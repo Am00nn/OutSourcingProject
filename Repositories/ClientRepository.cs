@@ -42,7 +42,18 @@ namespace OutsourcingSystem.Repositories
                 throw new Exception($"An error happen while retrieving the client with ID {id}.", ex);
             }
         }
+        public Client GetByuid(int id)
+        {
+            try
+            {
+                return _context.Client.FirstOrDefault(c => c.UID == id && !c.IsDeleted);
+            }
+            catch (Exception ex)
+            {
 
+                throw new Exception($"An error happen while retrieving the client with ID {id}.", ex);
+            }
+        }
         // get clients by a specific industry, ensuring they are not marked as deleted
         public IEnumerable<Client> GetByIndustry(string industry)
         {
@@ -71,6 +82,10 @@ namespace OutsourcingSystem.Repositories
             }
         }
 
+        public IEnumerable<Client> GetUnapprovedClients()
+        {
+            return _context.Client.Where(c => !c.IsApprove && !c.IsDeleted).ToList();
+        }
         // Adds a new client to the database and saves changes
         public void Add(Client client)
         {

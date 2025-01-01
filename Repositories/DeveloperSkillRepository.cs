@@ -56,5 +56,11 @@ namespace OutsourcingSystem.Repositories
         {
             return _context.DeveloperSkill.Where(d => d.DeveloperID == devID).ToList();
         }
+
+        //Gets Developer skill by skillID and DevID [returns developerSkill]
+        public DeveloperSkill GetDeveloperSkillByIDs(int devID, int skillID)
+        {
+            return _context.DeveloperSkill.FirstOrDefault(d => d.DeveloperID == devID && d.SkillID == skillID);
+        }
     }
 }

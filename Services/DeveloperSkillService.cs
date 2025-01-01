@@ -14,14 +14,22 @@ namespace OutsourcingSystem.Services
         //Adds developer skill using input from user 
         public string AddDeveloperSkill(int skillID, int developerID)
         {
-            //mapping input to developerSkill 
-            var devSkill = new DeveloperSkill
-            {
-                DeveloperID = developerID,
-                SkillID = skillID,
-            };
+            //Check that developer skill exists
+            var devSkillExists = _DeveloperSkillRepository.GetDeveloperSkillByIDs(developerID, skillID);
 
-            return _DeveloperSkillRepository.AddDeveloperSkill(devSkill);
+            if (devSkillExists != null)
+            {
+                //mapping input to developerSkill 
+                var devSkill = new DeveloperSkill
+                {
+                    DeveloperID = developerID,
+                    SkillID = skillID,
+                };
+
+                return _DeveloperSkillRepository.AddDeveloperSkill(devSkill);
+            }
+
+            else return "<!>This developer skill relationship does not exist<!>";
         }
 
         //Deleting developer skill [returns 0 no errors or 1 error occured]
@@ -29,10 +37,17 @@ namespace OutsourcingSystem.Services
         {
             try
             {
-                _DeveloperSkillRepository.DeleteDeveloperSkill(DeveloperID, skillID);
-                return 0; //no errors
+                //Check that developer skill relation exists 
+                var devSkillExists = _DeveloperSkillRepository.GetDeveloperSkillByIDs(DeveloperID, skillID);
+
+                if (devSkillExists != null)
+                {
+                    _DeveloperSkillRepository.DeleteDeveloperSkill(DeveloperID, skillID);
+                    return 0; //no errors
+                }
+                else return 1; //developer skill relationship does not exist
             }
-            catch { return 1; } //error occured 
+            catch { return 2; } //error occured 
         }
 
         public List<DeveloperSkill> GetAllDeveloperSkills(int Page, int PageSize, int? developerID, int? skillID)
@@ -56,11 +71,21 @@ namespace OutsourcingSystem.Services
             return devSkills.OrderBy(t => t.DeveloperID).Skip(number).Take(PageSize).ToList();
         }
 
-        public List<DeveloperSkill> GetSkillByDevID(int DevID)
+        public string GetSkillByDevID(int DevID)
         {
-            return _DeveloperSkillRepository.GetAllSkillsForDev(DevID);
+            //validate output -> skill does not exist, no developers found
+            //Check that developer skill relation exists 
+            var devSkillExists = _DeveloperSkillRepository.GetAllSkillsForDev(DevID);
+
+            if (devSkillExists != null)
+            {
+                return ($"Developers with this skill are: \n" + _DeveloperSkillRepository.GetAllSkillsForDev(DevID));
+            }
+            else return ("<!>This developer does not have skills or does not exist<!>");
+
         }
 
+        //Checks id a dev has a specific skill [returns true / false] 
         public bool CheckDevHasSkill(int devID, int skillID)
         {
             var skillFound = _DeveloperSkillRepository.CheckDevHasSkill(devID, skillID);

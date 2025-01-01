@@ -10,15 +10,18 @@ namespace OutsourcingSystem.Services
     public class UserServices : IUserServices
     {
         private readonly IUserRepositry _userrepo;
-
+        private readonly IClientRepository _clientRepository;
+        private readonly  IDeveloperRepositry _developerrepo;
         // Constructor to inject the IUserRepo dependency
-        public UserServices(IUserRepositry userrepo)
+        public UserServices(IUserRepositry userrepo, IClientRepository clientRepository, IDeveloperRepositry developerrepo )
         {
             // Assigning the injected IUserRepo instance to the private field
             _userrepo = userrepo;
+            _clientRepository = clientRepository;
+         _developerrepo = developerrepo;
         }
 
-        public int AddUser(UserInputDto user)
+        public int AddUserAdmin(AdminInputDto user)
         {
             try
             {
@@ -77,15 +80,104 @@ namespace OutsourcingSystem.Services
             }
         }
       
+
        public bool UserExists(int userId)
         {
             return _userrepo.UserExists(userId);
         }
+
+
+
+
+
+
+
+
+
+
+        public void ApproveClient(ApprovalDto approval, ClaimsPrincipal user, int userid)
+        {
+            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            
+            if (!isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admin can approve");
+            }
+           
+            var client = _clientRepository.GetById(approval.ClientId);
+            if (client == null)
+            {
+                throw new ArgumentException("Client not found.");
+            }
+
+            client.IsApprove = approval.IsApprove;
+            client.ApproveBy = userid;
+            
+            //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
+            _clientRepository.Update(client);
+        }
+
+
+
+
+        public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
+        {
+            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            if (!isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+            }
+            return _clientRepository.GetUnapprovedClients();
+        }
+
+
+
+        public void Approvedeveloper(ApproveDeveloper approval, ClaimsPrincipal user, int userid)
+        {
+            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
+            if (!isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admin can approve");
+            }
+
+            var developer = _developerrepo.GetById(approval.DeveloperId);
+            if (developer == null)
+            {
+                throw new ArgumentException("developer not found.");
+            }
+
+            developer.IsApprove = approval.IsApprove;
+            developer.IsApproveBy = userid;
+
+            //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
+           // _clientRepository.Update(client);
+        }
+
+
+
+
+        //public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
+        //{
+        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+        //    if (!isAdmin)
+        //    {
+        //        throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+        //    }
+        //    return _clientRepository.GetUnapprovedClients();
+        //}
+
+
+
+
+
+
         public User Login(string email, string password)
         {
             try
             {
                 var user = _userrepo.GetUserByEmail(email);
+              
                 if (user == null)
                 {
                     throw new ArgumentException("Invalid email or password.");
@@ -94,11 +186,18 @@ namespace OutsourcingSystem.Services
                 {
                     throw new ArgumentException("This account is not activated.");
                 }
+               
 
                 // Verify the password against the hashed password
                 if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
                     throw new UnauthorizedAccessException("Invalid credentials.");
+                }
+
+                var client = _clientRepository.GetByuid(user.UID); // Assuming UserId matches Client's UID
+                if (client != null && !client.IsApprove)
+                {
+                    throw new InvalidOperationException("Your account has not been approved by an admin yet.");
                 }
 
                 return user; // Return the user if login is successful
@@ -120,6 +219,12 @@ namespace OutsourcingSystem.Services
             }
         }
 
+
+
+
+
+
+       
         public List<User> GetAllUsers(int userid)
         {
             try

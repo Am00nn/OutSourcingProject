@@ -2,12 +2,8 @@
 
 namespace OutsourcingSystem.DTOs
 {
-  
-
-    public class UserInputDto
+    public class AdminInputDto
     {
-
-
         [Required(ErrorMessage = "Name is required")]
         [MaxLength(100, ErrorMessage = "Nmae cannot more than 100 characters")]
         public string Name { get; set; }
@@ -26,15 +22,8 @@ namespace OutsourcingSystem.DTOs
         [RegularExpression("^(Developer|Admin|Client)$", ErrorMessage = "The role must be one of the following: Developer, Admin, Client.")]
         public string role { get; set; }  //"client " , "Developer" , "Admin"
 
-         
+
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-       // public int userid { get; set; }
-        public string CompanyName { get; set; }
-        public string Industry { get; set; }
-        public decimal? Rating { get; set; }
-        public string Notes { get; set; }
-        public DateTime CreatedAtClient { get; set; }
-
     }
 }

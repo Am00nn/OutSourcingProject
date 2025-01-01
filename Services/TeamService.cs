@@ -51,6 +51,18 @@ namespace OutsourcingSystem.Services
             catch { return 2; } //an error occured when trying to save
         }
 
+        //Checks if the team exists
+        public bool CheckTeamByID(int TeamID)
+        {
+            var team = _teamRepository.GetTeamByID(TeamID);
+            return team != null?true: false; //if team found return true if not found return false
+        }
+
+        public Team GetTeamByID(int TeamID)
+        {
+            return _teamRepository.GetTeamByID(TeamID);
+        }
+
         //Reactivating after soft delete
         public int ReactivateTeam(int TeamID)
         {

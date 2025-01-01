@@ -41,13 +41,25 @@ namespace OutsourcingSystem.Models
         [Required(ErrorMessage = "CanBePartOfTeam is required.")]
         public bool CanBePartOfTeam { get; set; } = true;
 
+        [Url(ErrorMessage = "Invalid URL format.")]
+        public string DocumentLink {  get; set; }
         public virtual ICollection<DeveloperSkill> DeveloperSkills { get; set; }
 
         public virtual ICollection<ClientReviewDeveloper> ClientReviewDeveloper { get; set; }
 
+        public virtual ICollection<ClientRequestDeveloper> ClientRequestDeveloper { get; set; }
+
+        public virtual ICollection<ClientRequestTeam> ClientRequestTeam { get; set; }
+
         public virtual ICollection<FeedbackOnClient> FeedbackOnClient { get; set; }
 
         public virtual ICollection<Project> Project { get; set; }
+        public bool IsApprove { get; set; }=false;
+        public int? IsApproveBy {  get; set; }   
+
+        public bool IsDelete {  get; set; }  
+        
+       
 
 
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocuSign.eSign.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OutsourcingSystem.DTOs;
@@ -19,22 +20,24 @@ namespace OutsourcingSystem.Controllers
             private readonly IUserServices _userService;
             private readonly IConfiguration _configuration;
         private readonly IClientService _clientService;
+        private readonly IDeveloperServices _developerServices; 
 
 
-            public UserController(IUserServices userService, IConfiguration configuration, IClientService clientService)
+            public UserController(IUserServices userService, IConfiguration configuration, IClientService clientService , IDeveloperServices developerServices)
             {
             _clientService=clientService;
               _userService = userService;
                 _configuration = configuration;
+             _developerServices = developerServices;
 
             }
         [AllowAnonymous]
-        [HttpPost("AddUser")]
-        public IActionResult AddUser(UserInputDto user)
+        [HttpPost("AddAdmin")]
+        public IActionResult AddUser(AdminInputDto user)
         {
             try
             {
-                var userId = _userService.AddUser(user); // Assume AddUser returns the newly created UserId.
+                var userId = _userService.AddUserAdmin(user); // Assume AddUser returns the newly created UserId.
                 return Ok(new
                 {
                     Message = "User added successfully.",
@@ -72,6 +75,88 @@ namespace OutsourcingSystem.Controllers
         }
 
         [AllowAnonymous]
+        [HttpPost("RegisterDeveloper")]
+        public IActionResult AddDeveloper(UserDeveloperInputDto developer)
+        {
+            try
+            {
+                _developerServices.RegisterDeveloper( developer);
+
+                return Ok(" Developer added successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        //[HttpGet("GetUnapprovedDeveloper")]
+        //public IActionResult GetUnapproveDeveloper()
+        //{
+        //    try
+        //    {
+        //        //var unapproveddeveloper = _userService.GetUnapprovedDeveloper(User);
+        //        //return Ok(unapproveddeveloper);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
+        //[HttpPost("ApproveDeveloper")]
+        //public IActionResult ApproveDeveloper(ApproveDeveloper approval)
+        //{
+        //    try
+        //    {
+        //        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //        _userService.Approvedeveloper(approval, User, int.Parse(userId));
+        //        return Ok("Client approval status updated successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
+
+
+
+
+
+
+
+
+
+
+
+        [HttpGet("GetUnapprovedClients")]
+        public IActionResult GetUnapprovedClients()
+        {
+            try
+            {
+                var unapprovedClients = _userService.GetUnapprovedClients(User);
+                return Ok(unapprovedClients);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+        [HttpPost("ApproveClient")]
+        public IActionResult ApproveClient(ApprovalDto approval)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                _userService.ApproveClient(approval,User, int.Parse(userId));
+                return Ok("Client approval status updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
+
+        [AllowAnonymous]
             [HttpPost("Login")]
             [ProducesResponseType(StatusCodes.Status200OK)] // For successful login
             [ProducesResponseType(StatusCodes.Status400BadRequest)] // For invalid credentials
@@ -91,7 +176,7 @@ namespace OutsourcingSystem.Controllers
                         var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UID.ToString()), // User ID
-                new Claim(ClaimTypes.Name, user.Name),                    // User Name
+                new Claim(ClaimTypes.Name, user.Name),// User Name
                 new Claim(ClaimTypes.Role, user.role.ToString()) ,
                 new Claim("UID", user.UID.ToString())// User Role (Admin/NormalUser)
             };

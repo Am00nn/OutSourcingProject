@@ -13,6 +13,9 @@ namespace OutsourcingSystem.Models
         public int ClientID { get; set; }
         public Client Client { get; set; }
 
+        [ForeignKey(nameof(team))]
+        public int TID { get; set; }
+        public Team team { get; set; }
 
 
         [Required(ErrorMessage = "Start date is required.")]

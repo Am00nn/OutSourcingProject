@@ -6,12 +6,15 @@ namespace OutsourcingSystem.Services
 {
     public interface IUserServices
     {
-        public int AddUser(UserInputDto user);
+        public int AddUserAdmin(AdminInputDto user);
+       // int AddUser(UserInputDto user);
+        void ApproveClient(ApprovalDto approval, ClaimsPrincipal user, int userid);
         bool DeleteUser(string role, int userIdFromToken);
         List<User> GetAllUsers(int userid);
         User GetUserByID(int ID, ClaimsPrincipal user);
         User Login(string email, string password);
         bool UpdateUser(int userIdFromToken, UserUpdateDto updateRequest);
-        public bool UserExists(int userId);
+        bool UserExists(int userId);
+        public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal User );
     }
 }

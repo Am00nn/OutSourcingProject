@@ -1,4 +1,5 @@
 ﻿using OutsourcingSystem.DTOs;
+using OutsourcingSystem.Models;
 
 namespace OutsourcingSystem.Services
 {
@@ -11,5 +12,9 @@ namespace OutsourcingSystem.Services
         public void RegisterClient(UserInputDto client);
         void SoftDeleteClient(int id);
         void UpdateClient(int id, ClientDTO updatedClientDto);
+
+       
+
+
     }
 }

@@ -36,7 +36,11 @@ namespace OutsourcingSystem.Controllers
         {
             try
             {
-                return Ok(_developerSkillService.DeleteDeveloperSkill(TeamID, devID));
+                var result = _developerSkillService.DeleteDeveloperSkill(TeamID, devID);
+
+                if (result == 0) return Ok("Skill removed from developer successfully");
+                else if (result == 1) return BadRequest("<!>This developer skill relationship does not exist<!>");
+                else return Ok("<!>An error occured while trying to execute this request<!>");
             }
             catch (Exception ex)
             {
@@ -52,6 +56,21 @@ namespace OutsourcingSystem.Controllers
             try
             {
                 return Ok(_developerSkillService.GetSkillByDevID(DevID));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [Authorize(Roles = "Admin, Client")]
+        [HttpGet("Get Developers By Skill {int SkillID}")]
+        public IActionResult GetDevsBySkill(int SkillID)
+        {
+            try
+            {
+                return Ok(_developerSkillService.GetDevelopersBySkill(SkillID));
             }
             catch (Exception ex)
             {

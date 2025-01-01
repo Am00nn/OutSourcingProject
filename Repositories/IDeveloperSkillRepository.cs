@@ -11,5 +11,6 @@ namespace OutsourcingSystem.Repositories
         List<DeveloperSkill> GetAllSkillsForDev(int devID);
         List<DeveloperSkill> GetDevelopersBySkillID(int SkillID);
         List<DeveloperSkill> GetSkillsByDeveloperID(int DevID);
+        DeveloperSkill GetDeveloperSkillByIDs(int devID, int skillID);
     }
 }

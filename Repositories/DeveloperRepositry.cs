@@ -47,6 +47,25 @@ namespace OutsourcingSystem.Repositories
             }
         }
 
+        public void Update(Developer dev)
+        {
+            try
+            {
+                _context.Developer.Update(dev);
+
+                _context.SaveChanges(); // Saves change after updating
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("An error occurred while updating the Developer.", ex);
+            }
+        }
+        public IEnumerable<Developer> GetUnapproveddeveloper()
+        {
+            return _context.Developer.Where(c => !c.IsApprove && !c.IsDelete).ToList();
+        }
+
 
     }
 }

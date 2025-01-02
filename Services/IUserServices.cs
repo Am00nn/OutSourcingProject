@@ -16,5 +16,7 @@ namespace OutsourcingSystem.Services
         bool UpdateUser(int userIdFromToken, UserUpdateDto updateRequest);
         bool UserExists(int userId);
         public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal User );
+        public IEnumerable<Developer> GetUnapprovedDeveloper(ClaimsPrincipal user);
+        public void Approvedeveloper(ApproveDeveloper approval, ClaimsPrincipal user, int userid);
     }
 }

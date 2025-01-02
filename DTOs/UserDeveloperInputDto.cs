@@ -45,25 +45,25 @@ namespace OutsourcingSystem.DTOs
         [Range(0.01, double.MaxValue, ErrorMessage = "Hourly rate must be greater than zero.")]
         public decimal HourlyRate { get; set; }
 
-        [Required(ErrorMessage = "Availability status is required.")]
-        public bool AvailabilityStatus { get; set; } = true;
+        //[Required(ErrorMessage = "Availability status is required.")]
+        //public bool AvailabilityStatus { get; set; } = true;
 
         [MaxLength(1000, ErrorMessage = "Career summary cannot exceed 1000 characters.")]
         public string CareerSummary { get; set; }
 
-        [Range(0, int.MaxValue, ErrorMessage = "Completed projects must be a non-negative number.")]
-        public int CompletedProjects { get; set; } = 0;
+      //  [Range(0, int.MaxValue, ErrorMessage = "Completed projects must be a non-negative number.")]
+      //  public int CompletedProjects { get; set; } = 0;
 
         [Required(ErrorMessage = "CanBePartOfTeam is required.")]
-        public bool CanBePartOfTeam { get; set; } = true;
+       // public bool CanBePartOfTeam { get; set; } = true;
 
         [Url(ErrorMessage = "Invalid URL format.")]
         public string DocumentLink { get; set; }
-        public bool IsApprove { get; set; } = false;
-        public int? IsApproveBy { get; set; }
+        //public bool IsApprove { get; set; } = false;
+        //public int? IsApproveBy { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
-        public bool? IsDelete { get; set; }
+        //public DateTime? UpdatedAt { get; set; }
+        //public bool? IsDelete { get; set; }
 
 
 

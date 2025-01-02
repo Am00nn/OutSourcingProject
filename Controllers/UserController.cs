@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Models;
 using OutsourcingSystem.Services;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -162,61 +163,59 @@ namespace OutsourcingSystem.Controllers
             [ProducesResponseType(StatusCodes.Status400BadRequest)] // For invalid credentials
             [ProducesResponseType(StatusCodes.Status401Unauthorized)] // For unauthorized access
             [ProducesResponseType(StatusCodes.Status500InternalServerError)] // For unexpected errors
-            public IActionResult Login(string email, string password)
+        public IActionResult Login(string email, string password)
+        {
+            try
             {
-                try
+                var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (string.IsNullOrEmpty(role))
                 {
-             
-                // Authenticate the user via the service layer
-                var user = _userService.Login(email, password);
+                    return BadRequest(new { Error = "Role is required." });
+                }
 
-                    if (user != null)
-                    {
-                        // Generate claims for the user
-                        var claims = new List<Claim>
+                var user = _userService.Login(email, password, role);
+
+                if (user != null)
+                {
+                    var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UID.ToString()), // User ID
-                new Claim(ClaimTypes.Name, user.Name),// User Name
-                new Claim(ClaimTypes.Role, user.role.ToString()) ,
-                new Claim("UID", user.UID.ToString())// User Role (Admin/NormalUser)
+                new Claim(ClaimTypes.NameIdentifier, user.UID.ToString()),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, user.role),
+                new Claim("UID", user.UID.ToString())
             };
 
-                        // Generate JWT token using claims
-                        string token = GenerateJwtToken(claims);
-                        return Ok(new
-                        {
-                            Token = token,
-                            Role = user.role.ToString(),         // Return the user's role
-                            Message = "Login successful."
-                        });
-                    }
-
-                    // If user is null, return BadRequest
-                    return BadRequest(new { Error = "Invalid credentials." });
-                }
-                catch (ArgumentException ex)
-                {
-                    // Handle invalid email or password format
-                    return BadRequest(new { Error = ex.Message });
-                }
-                catch (UnauthorizedAccessException ex)
-                {
-                    // Handle invalid credentials
-                    return Unauthorized(new { Error = ex.Message });
-                }
-                catch (Exception ex)
-                {
-                    // Handle unexpected errors
-                    return StatusCode(StatusCodes.Status500InternalServerError, new
+                    string token = GenerateJwtToken(claims);
+                    return Ok(new
                     {
-                        Error = "An unexpected error occurred.",
-                        Details = ex.Message
+                        Token = token,
+                        Role = user.role,
+                        Message = "Login successful."
                     });
                 }
-            }
 
-           // [Authorize]
-            [HttpGet("GetDetailsUser")]
+                return BadRequest(new { Error = "Invalid credentials." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { Error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    Error = "An unexpected error occurred.",
+                    Details = ex.Message
+                });
+            }
+        }
+
+        // [Authorize]
+        [HttpGet("GetDetailsUser")]
             [ProducesResponseType(StatusCodes.Status200OK)]
             [ProducesResponseType(StatusCodes.Status400BadRequest)]
             [ProducesResponseType(StatusCodes.Status403Forbidden)]

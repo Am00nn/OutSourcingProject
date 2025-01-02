@@ -12,7 +12,7 @@ namespace OutsourcingSystem.Services
         bool DeleteUser(string role, int userIdFromToken);
         List<User> GetAllUsers(int userid);
         User GetUserByID(int ID, ClaimsPrincipal user);
-        User Login(string email, string password);
+        User Login(string email, string password, string role);
         bool UpdateUser(int userIdFromToken, UserUpdateDto updateRequest);
         bool UserExists(int userId);
         public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal User );

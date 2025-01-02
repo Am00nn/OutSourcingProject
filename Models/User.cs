@@ -36,7 +36,7 @@ namespace OutsourcingSystem.Models
 
         public DateTime? UpdatedAt { get; set; }
 
-        public bool? IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }=false;
 
 
 

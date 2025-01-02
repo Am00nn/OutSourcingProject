@@ -172,56 +172,73 @@ namespace OutsourcingSystem.Services
 
 
 
-        public User Login(string email, string password)
+        public User Login(string email, string password, string role)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
+                {
+                    throw new ArgumentException("Email, password, and role are required.");
+                }
+
                 var user = _userrepo.GetUserByEmail(email);
-              
                 if (user == null)
                 {
                     throw new ArgumentException("Invalid email or password.");
                 }
+
                 if (user.IsDeleted == true)
                 {
                     throw new ArgumentException("This account is not activated.");
                 }
-               
 
-                // Verify the password against the hashed password
                 if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
                     throw new UnauthorizedAccessException("Invalid credentials.");
                 }
 
-                var client = _clientRepository.GetByuid(user.UID); // Assuming UserId matches Client's UID
-                if (client != null && !client.IsApprove)
+                if (role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new InvalidOperationException("Your account has not been approved by an admin yet.");
+                    var admin = _userrepo.GetUserById(user.UID);
+                    if (admin != null && admin.IsDeleted)
+                    {
+                        throw new InvalidOperationException("You can't login.");
+                    }
+                }
+                else if (role.Equals("Client", StringComparison.OrdinalIgnoreCase))
+                {
+                    var client = _clientRepository.GetByuid(user.UID);
+                    if (client == null || !client.IsApprove)
+                    {
+                        throw new InvalidOperationException("Your account has not been approved by an admin yet.");
+                    }
+                }
+                else if (role.Equals("Developer", StringComparison.OrdinalIgnoreCase))
+                {
+                    var developer = _developerrepo.GetById(user.UID);
+                    if (developer == null || !developer.IsApprove)
+                    {
+                        throw new InvalidOperationException("Your account has not been approved by an admin yet.");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid role.");
                 }
 
-                var developer = _developerrepo.GetById(user.UID); // Assuming UserId matches Client's UID
-                if (developer != null && !developer.IsApprove)
-                {
-                    throw new InvalidOperationException("Your account has not been approved by an admin yet.");
-                }
-
-                return user; // Return the user if login is successful
+                return user;
             }
             catch (ArgumentException ex)
             {
-                // Handle specific argument exceptions
                 throw new ArgumentException($"Error during login: {ex.Message}");
             }
             catch (UnauthorizedAccessException ex)
             {
-                // Handle unauthorized access exceptions
                 throw new UnauthorizedAccessException($"Login failed: {ex.Message}");
             }
             catch (Exception ex)
             {
-                // Handle any other unexpected exceptions
-                throw new Exception($"An unexpected error occurred: {ex.Message}");
+                throw new Exception($"Unexpected error in Login method: {ex.Message}", ex);
             }
         }
 
@@ -229,8 +246,6 @@ namespace OutsourcingSystem.Services
 
 
 
-
-       
         public List<User> GetAllUsers(int userid)
         {
             try

@@ -13,6 +13,10 @@ namespace OutsourcingSystem.Models
         public int DeveloperID { get; set; }
         public Developer Developer { get; set; }
 
+        [Required]
+        [ForeignKey(nameof(Client))]
+        public int ClientID { get; set; }
+        public Client Client { get; set; }
 
 
         [Required(ErrorMessage = "Rating is required.")]

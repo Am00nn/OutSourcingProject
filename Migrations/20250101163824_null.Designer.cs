@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OutsourcingSystem;
 
@@ -11,9 +12,11 @@ using OutsourcingSystem;
 namespace OutsourcingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101163824_null")]
+    partial class @null
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,7 +157,7 @@ namespace OutsourcingSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
 
-                    b.Property<int>("ClientID")
+                    b.Property<int?>("ClientID")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -409,6 +412,35 @@ namespace OutsourcingSystem.Migrations
                     b.ToTable("Skills");
                 });
 
+            modelBuilder.Entity("OutsourcingSystem.Models.SubmitRequestModel", b =>
+                {
+                    b.Property<int>("SId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SId"));
+
+                    b.Property<int?>("DeveloperID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RequestType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SId");
+
+                    b.ToTable("SubmitRequestModel");
+                });
+
             modelBuilder.Entity("OutsourcingSystem.Models.Team", b =>
                 {
                     b.Property<int>("TeamID")
@@ -568,19 +600,15 @@ namespace OutsourcingSystem.Migrations
 
             modelBuilder.Entity("OutsourcingSystem.Models.ClientReviewDeveloper", b =>
                 {
-                    b.HasOne("OutsourcingSystem.Models.Client", "Client")
+                    b.HasOne("OutsourcingSystem.Models.Client", null)
                         .WithMany("ClientReviewDeveloper")
-                        .HasForeignKey("ClientID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClientID");
 
                     b.HasOne("OutsourcingSystem.Models.Developer", "Developer")
                         .WithMany("ClientReviewDeveloper")
                         .HasForeignKey("DeveloperID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Client");
 
                     b.Navigation("Developer");
                 });

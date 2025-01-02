@@ -9,11 +9,15 @@ namespace OutsourcingSystem.Services
     {
         private readonly ITeamService _teamService;
         private readonly ITeamMemberService _teamMemberService;
-        // private readonly IDeveloperService _developerService;
-        public JointService(ITeamService teamService, ITeamMemberService teamMemberService)
+        private readonly IReviewTeamService _reviewTeamService;
+        private readonly IReviewDeveloperService _reviewDevService;
+        //private readonly IDeveloperService _developerService;
+        public JointService(ITeamService teamService, ITeamMemberService teamMemberService, IReviewTeamService reviewteamservice, IReviewDeveloperService reviewDeveloperService)
         {
             _teamMemberService = teamMemberService;
             _teamService = teamService;
+            _reviewTeamService = reviewteamservice;
+            _reviewDevService = reviewDeveloperService;
         }
 
         public string AddTeamMemberToTeam(int developerID, int teamID)
@@ -67,6 +71,97 @@ namespace OutsourcingSystem.Services
         public List<TeamMember> GetTeamMemberByTeamID(int teamID)
         {
             return _teamMemberService.GetTeamMemberByTeamID(teamID);
+        }
+
+        //this validates the input then calls the teamservice repo to do the actual calculations 
+        public int AddReviewTeam(int ClientID, ClientReviewInDTO input)
+        {
+            //check valid team id 
+            bool validTeam = _teamService.CheckTeamByID(input.ID);
+
+            //*************************Add these validation when project added********************
+            //check that this client  actually worked with this team 
+            //bool eligibleToReview = _projectService.GetProjectByClientTeamIDs;//will get this from projects table
+           //check project completed 
+
+            if (validTeam)
+            {
+                return _reviewTeamService.AddReviewTeam(ClientID, input);
+            }
+            else return -1; //invalid team found
+        }
+
+        //this validates the input then calls the developerservice repo to do the actual calculations 
+        public int AddReviewDeveloper(int DevID, ClientReviewInDTO input)
+        {
+            //************************Add this when developer added*************
+            //check valid team id 
+            //bool validDev = _devService.CheckDevByID(input.ID);
+
+            //*************************Add these validation when project added********************
+            //check that this client  actually worked with this team 
+            //bool eligibleToReview = _projectService.GetProjectByClientTeamIDs;//will get this from projects table
+            //check project completed 
+
+            //if (validDev)
+            //{
+            //  return _developerService.AddReviewDev(DevID, input);
+            //}
+            //else return -1; //invalid team found
+
+            return 1;
+        }
+
+        public int UpdateReviewDeveloper(int ClientID, ClientReviewInDTO review)
+        {
+            return _reviewDevService.UpdateDevReview(ClientID, review);
+        }
+
+        public int UpdateReviewTeam(int ClientID, ClientReviewInDTO review)
+        {
+            return _reviewTeamService.UpdateTeamReview(ClientID, review);
+        }
+
+        public List<ClientReviewDeveloper> GetDeveloperReviews(int Page, int PageSize, int? Rating, int? DevID)
+        {
+            return _reviewDevService.GetAllDevReviews(Page, PageSize, Rating, DevID );
+        }
+
+        public List<ClientReviewTeam> GetTeamReviews(int Page, int PageSize, int? Rating, int? TeamID)
+        {
+            return _reviewTeamService.GetAllTeamReviews(Page, PageSize, Rating, TeamID);
+        }
+
+        public string DeleteTeamReview(int ClientID, int TeamID)
+        {
+            //check that client is team relation exists 
+            bool exists = _reviewTeamService.CheckReviewByTeamIDAndClientID(ClientID, TeamID);
+
+            //Delete 
+            if (exists)
+            {
+                var teamRev = _reviewTeamService.GetRevTeamByTeamIDAndClientID(TeamID, ClientID);
+                _reviewTeamService.DeleteTeamReview(teamRev);
+                return "Team review deleted!";
+            }
+
+            else return "<!>This review does not exist<!>";
+        }
+
+        public string DeleteDeveloperReview(int ClientID, int DevID)
+        {
+            //check that client is team relation exists 
+            bool exists = _reviewDevService.CheckReviewByDevIDandTeamID(ClientID, DevID);
+
+            //Delete 
+            if (exists)
+            {
+                var teamRev = _reviewDevService.GetByDevIDandTeamID(ClientID, DevID);
+                _reviewDevService.DeleteDeveloperReview(teamRev);
+                return "Developer review deleted!";
+            }
+
+            else return "<!>This review does not exist<!>";
         }
     }
 }

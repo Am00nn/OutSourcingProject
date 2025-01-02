@@ -27,8 +27,8 @@ namespace OutsourcingSystem.Controllers
         {
             try
             {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                return Ok(_teamService.AddTeam(int.Parse(userId), team));
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                return Ok(_teamService.AddTeam(userId, team));
             }
             catch (Exception ex)
             {
@@ -38,14 +38,21 @@ namespace OutsourcingSystem.Controllers
         }
 
         [HttpPatch("Update Team")]
-        public IActionResult UpdateTeam(int TeamID, int AdminID, TeamInDTO team) //Taking the ID of the old team and the new values of the team 
+        public IActionResult UpdateTeam(int TeamID, TeamUpdateDTO team) //Taking the ID of the old team and the new values of the team 
         {
             try
             {
-                int result = _teamService.UpdateTeam(TeamID, AdminID, team);
+                var Role = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                if (result == 0) { return Ok("Updated!"); }
-                else { return BadRequest("<!>Inputted team ID is invalid<!>"); }
+                if (Role == "Admin")
+                {
+                    var AdminID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                    int result = _teamService.UpdateTeam(TeamID, AdminID, team);
+
+                    if (result == 0) { return Ok("Updated!"); }
+                    else { return BadRequest("<!>Inputted team ID is invalid<!>"); }
+                }
             }
             catch (Exception ex)
             {

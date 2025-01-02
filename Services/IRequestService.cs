@@ -1,11 +1,10 @@
-﻿using OutsourcingSystem.Models;
-using System.Security.Claims;
+﻿using OutsourcingSystem.DTOs;
 
 namespace OutsourcingSystem.Services
 {
     public interface IRequestService
     {
-        string ProcessRequest(int requestId, string requestType, bool isAccepted);
-        string SubmitRequest(ClaimsPrincipal user, SubmitRequestModel requestModel);
+        Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType);
+        Task SubmitRequestAsync(RequestDto requestDto, int clientId);
     }
 }

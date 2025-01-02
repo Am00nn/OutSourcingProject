@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OutsourcingSystem;
 
@@ -11,9 +12,11 @@ using OutsourcingSystem;
 namespace OutsourcingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250101154610_AddClientIDToClientRevDevBecMissing")]
+    partial class AddClientIDToClientRevDevBecMissing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,14 +98,14 @@ namespace OutsourcingSystem.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("developerid")
+                    b.Property<int>("UID")
                         .HasColumnType("int");
 
                     b.HasKey("RequestID");
 
                     b.HasIndex("ClientID");
 
-                    b.HasIndex("developerid");
+                    b.HasIndex("UID");
 
                     b.ToTable("ClientRequestDeveloper");
                 });
@@ -534,7 +537,7 @@ namespace OutsourcingSystem.Migrations
 
                     b.HasOne("OutsourcingSystem.Models.Developer", "developer")
                         .WithMany("ClientRequestDeveloper")
-                        .HasForeignKey("developerid")
+                        .HasForeignKey("UID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -87,20 +87,30 @@ namespace OutsourcingSystem.Services
 
 
         //Adds team using input from user 
-        public int UpdateTeam(int TeamID, int AdminID, TeamInDTO team)
+        public int UpdateTeam(int TeamID, int AdminID, TeamUpdateDTO team)
         {
             var oldTeam = _teamRepository.GetTeamByID(TeamID);
-
+            
+            //Makes sure that only inputted data is changed 
             if (oldTeam != null)
             {
+                if (team.TeamCapacity.HasValue) 
+                { if (team.TeamCapacity != 2147483647) oldTeam.TeamCapacity = (int)team.TeamCapacity; }
+
+
+                if (team.HourlyRate.HasValue)
+                { if (team.HourlyRate != 0) oldTeam.HourlyRate = (decimal)team.HourlyRate; }
+
+                if (team.TeamName != "string")
+                { oldTeam.TeamName = team.TeamName; }
+
+                if (team.Description != "string")
+                { oldTeam.Description = team.Description; }
+
+
                 //mapping TeamInDTO to team 
-                oldTeam.TeamName = team.TeamName;
-                oldTeam.Description = team.Description;
-                oldTeam.TeamCapacity = team.TeamCapacity;
-                oldTeam.HourlyRate = team.HourlyRate;
                 oldTeam.ModifiedAt = DateTime.Now;
                 oldTeam.ModifiedBy = AdminID;
-
 
                 _teamRepository.UpdateTeam(oldTeam);
                 return 0; //no errors 

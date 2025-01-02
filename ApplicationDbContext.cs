@@ -30,6 +30,7 @@ namespace OutsourcingSystem
         public DbSet<Skill> Skills { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMember> TeamMember { get; set; }
+        
 
 
 

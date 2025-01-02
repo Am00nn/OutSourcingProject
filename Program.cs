@@ -46,6 +46,17 @@ namespace OutsourcingSystem
 
 
 
+            builder.Services.AddScoped<IRequestService, RequestService>();
+            builder.Services.AddScoped<IClientRequestDeveloperRepository, ClientRequestDeveloperRepository>();
+            builder.Services.AddScoped<IClientRequestTeamRepository, ClientRequestTeamRepository>();
+            
+            // Register EmailSettings and EmailService
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddScoped<IEmailService, EmailService>();
+
+
+
+
 
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>

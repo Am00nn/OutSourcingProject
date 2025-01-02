@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using OutsourcingSystem.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Services;
+using System.Security.Claims;
 
 namespace OutsourcingSystem.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestService _requestService;
@@ -16,43 +19,38 @@ namespace OutsourcingSystem.Controllers
         }
 
         [HttpPost("SubmitRequest")]
-        public IActionResult SubmitRequest([FromBody] SubmitRequestModel requestModel)
+        public async Task<IActionResult> SubmitRequest([FromBody] RequestDto requestDto)
         {
-            try
-            {
-                var result = _requestService.SubmitRequest(User, requestModel);
-                return Ok(result);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            // Extract ClientID from Token
+            var clientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+            if (string.IsNullOrEmpty(clientId))
+                return Unauthorized("Invalid token. ClientID not found.");
+
+          //  requestDto.ClientID = int.Parse(clientId); // Assign ClientID from token
+
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid data.");
+
+            await _requestService.SubmitRequestAsync(requestDto, int.Parse(clientId));
+            return Ok("Request submitted successfully.");
         }
 
         [HttpPost("ProcessRequest")]
-        public IActionResult ProcessRequest(int requestId, string requestType, bool isAccepted)
+        public async Task<IActionResult> ProcessRequest([FromBody] ProcessRequestDto processRequestDto)
         {
-            try
-            {
-                var result = _requestService.ProcessRequest(requestId, requestType, isAccepted);
-                return Ok(result);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid data.");
+
+            await _requestService.ProcessRequestAsync(
+                processRequestDto.RequestId,
+                processRequestDto.IsAccepted,
+                processRequestDto.RequestType
+            );
+
+            return Ok("Request processed successfully.");
         }
     }
+
 }

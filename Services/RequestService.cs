@@ -1,145 +1,82 @@
-﻿using OutsourcingSystem.Models;
-using System.Security.Claims;
+﻿using OutsourcingSystem.DTOs;
+using OutsourcingSystem.Models;
+using OutsourcingSystem.Repositories;
 
 namespace OutsourcingSystem.Services
 {
     public class RequestService : IRequestService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IClientRequestDeveloperRepository _developerRequestRepository;
+        private readonly IClientRequestTeamRepository _teamRequestRepository;
+        private readonly IEmailService _emailService;
 
-        public RequestService(ApplicationDbContext context)
+        public RequestService(
+            IClientRequestDeveloperRepository developerRequestRepository,
+            IClientRequestTeamRepository teamRequestRepository,
+            IEmailService emailService)
         {
-            _context = context;
+            _developerRequestRepository = developerRequestRepository;
+            _teamRequestRepository = teamRequestRepository;
+            _emailService = emailService;
         }
 
-        public string SubmitRequest(ClaimsPrincipal user, SubmitRequestModel requestModel)
+        public async Task SubmitRequestAsync(RequestDto requestDto, int clientId)
         {
-            var clientId = int.Parse(user.FindFirst("clientID")?.Value);
-            var role = user.FindFirst("role")?.Value;
-
-            if (role != "Client")
+            // Ensure ClientID is not null
+            if (clientId == 0)
             {
-                throw new UnauthorizedAccessException("Only clients can submit requests.");
+                throw new InvalidOperationException("ClientID cannot be null.");
             }
 
-            if (requestModel.RequestType == "Developer" && requestModel.DeveloperID == null)
-            {
-                throw new ArgumentException("Please specify a valid Developer ID.");
-            }
+            // Convert ClientID from nullable to non-nullable
+            // int clientId = requestDto.ClientID.Value;
 
-            if (requestModel.RequestType == "Team" && requestModel.TeamID == null)
+            if (requestDto.RequestType == "Developer")
             {
-                throw new ArgumentException("Please specify a valid Team ID.");
-            }
-
-            if (requestModel.RequestType == "Developer")
-            {
-                var developerExists = _context.Developer.Any(d => d.DeveloperID == requestModel.DeveloperID);
-                if (!developerExists)
+                var developerRequest = new ClientRequestDeveloper
                 {
-                    throw new ArgumentException("The specified Developer ID does not exist.");
-                }
-            }
-
-            if (requestModel.RequestType == "Team")
-            {
-                var teamExists = _context.Teams.Any(t => t.TeamID == requestModel.TeamID);
-                if (!teamExists)
-                {
-                    throw new ArgumentException("The specified Team ID does not exist.");
-                }
-            }
-
-            if (requestModel.RequestType == "Developer")
-            {
-                var request = new ClientRequestDeveloper
-                {
-                    ClientID = clientId,
-                   // DeveloperID = requestModel.DeveloperID.Value,
-                    StartDate = requestModel.StartDate,
-                    EndDate = requestModel.EndDate,
+                    ClientID = clientId, // Use converted value
+                    DeveloperID = requestDto.developerid ?? 0, // Default to 0 if null
+                    StartDate = requestDto.StartDate,
+                    EndDate = requestDto.EndDate,
                     Status = "Pending"
                 };
-                _context.ClientRequestDeveloper.Add(request);
+                await _developerRequestRepository.AddRequestAsync(developerRequest);
             }
-            else if (requestModel.RequestType == "Team")
+            else if (requestDto.RequestType == "Team")
             {
-                var request = new ClientRequestTeam
+                var teamRequest = new ClientRequestTeam
                 {
-                    ClientID = clientId,
-                   // TeamID = requestModel.TeamID.Value,
-                    StartDate = requestModel.StartDate,
-                    EndDate = requestModel.EndDate,
+                    ClientID = clientId, // Use converted value
+                    TID = requestDto.TeamID ?? 0, // Default to 0 if null
+                    StartDate = requestDto.StartDate,
+                    EndDate = requestDto.EndDate,
                     Status = "Pending"
                 };
-                _context.ClientRequestTeam.Add(request);
-            }
-            else
-            {
-                throw new ArgumentException("Invalid request type.");
+                await _teamRequestRepository.AddRequestAsync(teamRequest);
             }
 
-            _context.SaveChanges();
-
-            EmailService.SendEmail(
-                "amanialshmali7@gmail.com",
-                "New Request Submitted",
-                $"A new request has been submitted by client ID: {clientId} for type: {requestModel.RequestType}."
-            );
-
-            return "Request submitted successfully.";
+            await _emailService.SendEmailAsync("amanialshmali7@gmail.com", "New Request Submitted", "A new request has been submitted.");
         }
 
-        public string ProcessRequest(int requestId, string requestType, bool isAccepted)
+        public async Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType)
         {
-            string status = isAccepted ? "Approved" : "Rejected";
-            string clientEmail = string.Empty;
-
             if (requestType == "Developer")
             {
-                var request = _context.ClientRequestDeveloper.Find(requestId);
-                if (request != null)
-                {
-                    request.Status = status;
-
-                    clientEmail = _context.Users
-                        .Where(u => u.UID == request.ClientID)
-                        .Select(u => u.Email)
-                        .FirstOrDefault();
-                }
+                var request = await _developerRequestRepository.GetRequestByIdAsync(requestId);
+                request.Status = isAccepted ? "Approved" : "Rejected";
+                await _developerRequestRepository.UpdateRequestAsync(request);
             }
             else if (requestType == "Team")
             {
-                var request = _context.ClientRequestTeam.Find(requestId);
-                if (request != null)
-                {
-                    request.Status = status;
-
-                    clientEmail = _context.Users
-                        .Where(u => u.UID == request.ClientID)
-                        .Select(u => u.Email)
-                        .FirstOrDefault();
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Invalid request type.");
+                var request = await _teamRequestRepository.GetRequestByIdAsync(requestId);
+                request.Status = isAccepted ? "Approved" : "Rejected";
+                await _teamRequestRepository.UpdateRequestAsync(request);
             }
 
-            if (string.IsNullOrEmpty(clientEmail))
-            {
-                throw new ArgumentException("Client email not found.");
-            }
-
-            _context.SaveChanges();
-
-            EmailService.SendEmail(
-                clientEmail,
-                "Request Status",
-                isAccepted ? "Your request has been approved." : "Your request has been rejected."
-            );
-
-            return "Request processed successfully.";
+            string clientEmail = "client@example.com"; // Retrieve from database in real implementation
+            string statusMessage = isAccepted ? "Your request has been approved." : "Your request has been rejected.";
+            await _emailService.SendEmailAsync(clientEmail, "Request Status Update", statusMessage);
         }
 
     }

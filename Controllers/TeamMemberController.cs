@@ -50,7 +50,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [Authorize(Roles = "Admin, Client")]
-        [HttpGet("Get TeamMembers in Team {int TeamID}")] 
+        [HttpGet("Get TeamMembers in Team {TeamID}")] 
         public IActionResult GetMembers(int TeamID)
         {
             try

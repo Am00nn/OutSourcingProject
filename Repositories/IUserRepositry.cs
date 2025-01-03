@@ -8,12 +8,13 @@ namespace OutsourcingSystem.Repositories
         int AddUserInt(User user);
         bool Delete(User user);
         bool DoesEmailExist(string email);
-        List<User> GetAllUsers(int iduser);
+        List<User> GetAllUsers();
         User GetUser(string email, string password);
         User GetUserByEmail(string email);
         User GetUserById(int userId);
         User GetUserByPassword(string password);
         void Update(User user);
         bool UserExists(int userId);
+        string GetUserEmail(int userid);
     }
 }

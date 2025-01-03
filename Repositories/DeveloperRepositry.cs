@@ -14,7 +14,7 @@ namespace OutsourcingSystem.Repositories
         {
             _context = context;
         }
-
+        
         public Developer GetById(int id)
         {
             try
@@ -61,10 +61,10 @@ namespace OutsourcingSystem.Repositories
                 throw new Exception("An error occurred while updating the Developer.", ex);
             }
         }
-        public IEnumerable<Developer> GetUnapproveddeveloper()
-        {
-            return _context.Developer.Where(c => !c.IsApprove && !c.IsDelete).ToList();
-        }
+        //public IEnumerable<Developer> GetUnapproveddeveloper()
+        //{
+        //    return _context.Developer.Where(c => !c.IsApprove && !c.IsDelete).ToList();
+        //}
 
 
     }

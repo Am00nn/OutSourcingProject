@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Models;
 using OutsourcingSystem.Services;
+using System.Security.Claims;
 
 namespace OutsourcingSystem.Controllers
 {
@@ -46,12 +47,12 @@ namespace OutsourcingSystem.Controllers
 
        // Update  client data
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdateClient")]
         [Authorize(Roles = "Client")]
-        public IActionResult UpdateClient(int id, [FromBody] ClientDTO clientDto)
+        public IActionResult UpdateClient([FromBody] UpdateClientData clientDto)
         {
             // Check if the provided client data is null a
-
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (clientDto == null)
                 return BadRequest("Updated client data cannot be null.");
 
@@ -59,7 +60,7 @@ namespace OutsourcingSystem.Controllers
             {
                 // update the client using the service
 
-                _clientService.UpdateClient(id, clientDto);
+                _clientService.UpdateClient(int.Parse(id), clientDto);
 
                 // Return a 200 e if the update is successful
 
@@ -82,15 +83,15 @@ namespace OutsourcingSystem.Controllers
 
         //Delete client data
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteClient")]
         [Authorize(Roles = "Client")]
-        public IActionResult SoftDeleteClient(int id)
+        public IActionResult SoftDeleteClient()
         {
             try
             {
                 //  softdelete the client using the service
-
-                _clientService.SoftDeleteClient(id);
+                var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                _clientService.SoftDeleteClient(int.Parse(id));
 
                 // Return a 200  if is successful
                 return Ok("Client soft-deleted successfully.");
@@ -108,11 +109,11 @@ namespace OutsourcingSystem.Controllers
         }
        
         
-        [HttpGet]
+        [HttpGet("GetClientBy")]
 
-        [Authorize(Roles = "Developer, Admin")]
+     //   [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetAllClients(
-         [FromQuery] string name,
+         string name,
          [FromQuery] string industry,
          [FromQuery] decimal? rating,
          [FromQuery] int pageNumber = 1,
@@ -131,7 +132,7 @@ namespace OutsourcingSystem.Controllers
 
                 // get  clients using the service with  filter 
 
-                var clients = _clientService.GetAllClients(name, industry, rating, pageNumber, pageSize);
+                var clients = _clientService.GetAllClients(name,industry, rating, pageNumber, pageSize);
 
                 // Return a 200 with the list of clients
 
@@ -150,13 +151,14 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetClientById")]
         [Authorize(Roles = "Developer, Admin")]
-        public IActionResult GetClientById(int id)
+        public IActionResult GetClientById()
         {
             try
             {
-                var client = _clientService.GetClientById(id);
+                var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var client = _clientService.GetClientById(int.Parse(id));
 
                 return Ok(client);
             }

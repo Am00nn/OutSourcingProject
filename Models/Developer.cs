@@ -54,12 +54,11 @@ namespace OutsourcingSystem.Models
         public virtual ICollection<FeedbackOnClient> FeedbackOnClient { get; set; }
 
         public virtual ICollection<Project> Project { get; set; }
-        public bool IsApprove { get; set; }=false;
-        public int? IsApproveBy {  get; set; }   
+   
 
         public bool IsDelete {  get; set; }  
         
-       
+       public DateTime? UpdateDate { get; set; } 
 
 
     }

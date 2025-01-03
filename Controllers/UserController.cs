@@ -91,33 +91,33 @@ namespace OutsourcingSystem.Controllers
             }
         }
 
-        [HttpGet("GetUnapprovedDeveloper")]
-        public IActionResult GetUnapproveDeveloper()
-        {
-            try
-            {
-                var unapproveddeveloper = _userService.GetUnapprovedDeveloper(User);
-                return Ok(unapproveddeveloper);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-        }
-        [HttpPost("ApproveDeveloper")]
-        public IActionResult ApproveDeveloper(ApproveDeveloper approval)
-        {
-            try
-            {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                _userService.Approvedeveloper(approval, User, int.Parse(userId));
-                return Ok("develope approval status updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-        }
+        //[HttpGet("GetUnapprovedDeveloper")]
+        //public IActionResult GetUnapproveDeveloper()
+        //{
+        //    try
+        //    {
+        //        var unapproveddeveloper = _userService.GetUnapprovedDeveloper(User);
+        //        return Ok(unapproveddeveloper);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
+        //[HttpPost("ApproveDeveloper")]
+        //public IActionResult ApproveDeveloper(ApproveDeveloper approval)
+        //{
+        //    try
+        //    {
+        //        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //        _userService.Approvedeveloper(approval, User, int.Parse(userId));
+        //        return Ok("develope approval status updated successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
 
 
 
@@ -129,33 +129,33 @@ namespace OutsourcingSystem.Controllers
 
 
 
-        [HttpGet("GetUnapprovedClients")]
-        public IActionResult GetUnapprovedClients()
-        {
-            try
-            {
-                var unapprovedClients = _userService.GetUnapprovedClients(User);
-                return Ok(unapprovedClients);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-        }
-        [HttpPost("ApproveClient")]
-        public IActionResult ApproveClient(ApprovalDto approval)
-        {
-            try
-            {
-                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                _userService.ApproveClient(approval,User, int.Parse(userId));
-                return Ok("Client approval status updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
-        }
+        //[HttpGet("GetUnapprovedClients")]
+        //public IActionResult GetUnapprovedClients()
+        //{
+        //    try
+        //    {
+        //        var unapprovedClients = _userService.GetUnapprovedClients(User);
+        //        return Ok(unapprovedClients);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
+        //[HttpPost("ApproveClient")]
+        //public IActionResult ApproveClient(ApprovalDto approval)
+        //{
+        //    try
+        //    {
+        //        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //        _userService.ApproveClient(approval,User, int.Parse(userId));
+        //        return Ok("Client approval status updated successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Error = ex.Message });
+        //    }
+        //}
 
         [AllowAnonymous]
             [HttpPost("Login")]
@@ -167,13 +167,13 @@ namespace OutsourcingSystem.Controllers
         {
             try
             {
-                var role = User.FindFirst(ClaimTypes.Role)?.Value;
-                if (string.IsNullOrEmpty(role))
-                {
-                    return BadRequest(new { Error = "Role is required." });
-                }
+                //var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                //if (string.IsNullOrEmpty(role))
+                //{
+                //    return BadRequest(new { Error = "Role is required." });
+                //}
 
-                var user = _userService.Login(email, password, role);
+                var user = _userService.Login(email, password);
 
                 if (user != null)
                 {
@@ -224,16 +224,16 @@ namespace OutsourcingSystem.Controllers
                 try
                 {
                     // Extract claims from the token
-                    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    var userRole = User.FindFirst(ClaimTypes.Role.ToString())?.Value;
+                    //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    //var userRole = User.FindFirst(ClaimTypes.Role.ToString())?.Value;
 
-                    if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userRole))
-                    {
-                        return Forbid("Access denied. Unable to retrieve user details.");
-                    }
+                    //if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userRole))
+                    //{
+                    //    return Forbid("Access denied. Unable to retrieve user details.");
+                    //}
 
                     // Call the service to retrieve all users
-                    var users = _userService.GetAllUsers(int.Parse(userId));
+                    var users = _userService.GetAllUsers(User);
 
                     return Ok(users);
                 }
@@ -277,7 +277,7 @@ namespace OutsourcingSystem.Controllers
                 var userIdFromToken = int.Parse(User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 
                 // Call the service with extracted values
-                var result = _userService.DeleteUser(role, userIdFromToken);
+                var result = _userService.DeleteUser(userIdFromToken);
 
                 return Ok(new { success = result, message = "User deleted successfully." });
             }

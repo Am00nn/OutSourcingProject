@@ -11,14 +11,14 @@ namespace OutsourcingSystem.Services
     {
         private readonly IUserRepositry _userrepo;
         private readonly IClientRepository _clientRepository;
-        private readonly  IDeveloperRepositry _developerrepo;
+        private readonly IDeveloperRepositry _developerrepo;
         // Constructor to inject the IUserRepo dependency
-        public UserServices(IUserRepositry userrepo, IClientRepository clientRepository, IDeveloperRepositry developerrepo )
+        public UserServices(IUserRepositry userrepo, IClientRepository clientRepository, IDeveloperRepositry developerrepo)
         {
             // Assigning the injected IUserRepo instance to the private field
             _userrepo = userrepo;
             _clientRepository = clientRepository;
-         _developerrepo = developerrepo;
+            _developerrepo = developerrepo;
         }
 
         public int AddUserAdmin(AdminInputDto user)
@@ -60,7 +60,7 @@ namespace OutsourcingSystem.Services
                     Name = user.Name,
                     Email = user.Email,
                     Password = user.Password,
-                     role = user.role,
+                    role = user.role,
                     CreatedAt = user.CreatedAt,
                 };
 
@@ -79,104 +79,98 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
         }
-      
 
-       public bool UserExists(int userId)
+
+        public bool UserExists(int userId)
         {
             return _userrepo.UserExists(userId);
         }
 
 
+        //public void ApproveClient(ApprovalDto approval, ClaimsPrincipal user, int userid)
+        //{
+        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
+        //    if (!isAdmin)
+        //    {
+        //        throw new UnauthorizedAccessException("Only admin can approve");
+        //    }
+
+        //    var client = _clientRepository.GetById(approval.ClientId);
+        //    if (client == null)
+        //    {
+        //        throw new ArgumentException("Client not found.");
+        //    }
+
+        //    client.IsApprove = approval.IsApprove;
+        //    client.ApproveBy = userid;
+
+        //    //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
+        //    _clientRepository.Update(client);
+        //}
+
+
+        //public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
+        //{
+        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+        //    if (!isAdmin)
+        //    {
+        //        throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+        //    }
+        //    return _clientRepository.GetUnapprovedClients();
+        //}
+
+
+
+        //public void Approvedeveloper(ApproveDeveloper approval, ClaimsPrincipal user, int userid)
+        //{
+        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+
+        //    if (!isAdmin)
+        //    {
+        //        throw new UnauthorizedAccessException("Only admin can approve");
+        //    }
+
+        //    var developer = _developerrepo.GetById(approval.DeveloperId);
+        //    if (developer == null)
+        //    {
+        //        throw new ArgumentException("developer not found.");
+        //    }
+
+        //    developer.IsApprove = approval.IsApprove;
+        //    developer.IsApproveBy = userid;
+
+
+        //    _developerrepo.Update( developer);
+        //}
 
 
 
 
+        //public IEnumerable<Developer> GetUnapprovedDeveloper(ClaimsPrincipal user)
+        //{
+        //    var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+        //    if (!isAdmin)
+        //    {
+        //        throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
+        //    }
+        //    return _developerrepo.GetUnapproveddeveloper();
+        //}
 
 
-
-
-        public void ApproveClient(ApprovalDto approval, ClaimsPrincipal user, int userid)
+        public string GetEmail(int userid)
         {
-            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-            
-            if (!isAdmin)
-            {
-                throw new UnauthorizedAccessException("Only admin can approve");
-            }
-           
-            var client = _clientRepository.GetById(approval.ClientId);
-            if (client == null)
-            {
-                throw new ArgumentException("Client not found.");
-            }
-
-            client.IsApprove = approval.IsApprove;
-            client.ApproveBy = userid;
-            
-            //client.ApprovedByAdmin = approval.ApprovedByAdmin; // Optional: Add ApprovedByAdmin in the Client class.
-            _clientRepository.Update(client);
+            return _userrepo.GetUserEmail(userid);
         }
 
 
 
-
-        public IEnumerable<Client> GetUnapprovedClients(ClaimsPrincipal user)
-        {
-            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-            if (!isAdmin)
-            {
-                throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
-            }
-            return _clientRepository.GetUnapprovedClients();
-        }
-
-
-
-        public void Approvedeveloper(ApproveDeveloper approval, ClaimsPrincipal user, int userid)
-        {
-            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-
-            if (!isAdmin)
-            {
-                throw new UnauthorizedAccessException("Only admin can approve");
-            }
-
-            var developer = _developerrepo.GetById(approval.DeveloperId);
-            if (developer == null)
-            {
-                throw new ArgumentException("developer not found.");
-            }
-
-            developer.IsApprove = approval.IsApprove;
-            developer.IsApproveBy = userid;
-
-          
-            _developerrepo.Update( developer);
-        }
-
-
-
-
-        public IEnumerable<Developer> GetUnapprovedDeveloper(ClaimsPrincipal user)
-        {
-            var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-            if (!isAdmin)
-            {
-                throw new UnauthorizedAccessException("Only admin can Get the User Approve ");
-            }
-            return _developerrepo.GetUnapproveddeveloper();
-        }
-
-
-
-
-
-
-        public User Login(string email, string password, string role)
+        public User Login(string email, string password)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
+
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
                 {
                     throw new ArgumentException("Email, password, and role are required.");
                 }
@@ -197,34 +191,34 @@ namespace OutsourcingSystem.Services
                     throw new UnauthorizedAccessException("Invalid credentials.");
                 }
 
-                if (role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
-                {
-                    var admin = _userrepo.GetUserById(user.UID);
-                    if (admin != null && admin.IsDeleted)
-                    {
-                        throw new InvalidOperationException("You can't login.");
-                    }
-                }
-                else if (role.Equals("Client", StringComparison.OrdinalIgnoreCase))
-                {
-                    var client = _clientRepository.GetByuid(user.UID);
-                    if (client == null || !client.IsApprove)
-                    {
-                        throw new InvalidOperationException("Your account has not been approved by an admin yet.");
-                    }
-                }
-                else if (role.Equals("Developer", StringComparison.OrdinalIgnoreCase))
-                {
-                    var developer = _developerrepo.GetById(user.UID);
-                    if (developer == null || !developer.IsApprove)
-                    {
-                        throw new InvalidOperationException("Your account has not been approved by an admin yet.");
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid role.");
-                }
+                //if (role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    var admin = _userrepo.GetUserById(user.UID);
+                //    if (admin != null && admin.IsDeleted)
+                //    {
+                //        throw new InvalidOperationException("You can't login.");
+                //    }
+                //}
+                //else if (role.Equals("Client", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    var client = _clientRepository.GetByuid(user.UID);
+                //    if (client == null || !client.IsApprove)
+                //    {
+                //        throw new InvalidOperationException("Your account has not been approved by an admin yet.");
+                //    }
+                //}
+                //else if (role.Equals("Developer", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    var developer = _developerrepo.GetById(user.UID);
+                //    if (developer == null || !developer.IsApprove)
+                //    {
+                //        throw new InvalidOperationException("Your account has not been approved by an admin yet.");
+                //    }
+                //}
+                //else
+                //{
+                //    throw new ArgumentException("Invalid role.");
+                //}
 
                 return user;
             }
@@ -246,12 +240,17 @@ namespace OutsourcingSystem.Services
 
 
 
-        public List<User> GetAllUsers(int userid)
+        public List<User> GetAllUsers(ClaimsPrincipal user)
         {
             try
             {
+                var isAdmin = user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+                if (!isAdmin)
+                {
+                    throw new UnauthorizedAccessException("Only admin can Get all User ");
+                }
                 // Fetch all users from the repository
-                return _userrepo.GetAllUsers(userid);
+                return _userrepo.GetAllUsers();
             }
             catch (Exception ex)
             {
@@ -283,22 +282,22 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
         }
-         
-        public bool DeleteUser(string role, int userIdFromToken)
+
+        public bool DeleteUser(int userIdFromToken)
         {
             try
             {
-                if (role == "Admin" || role == "NormalUser")
-                {
-                    var userToDelete = _userrepo.GetUserById(userIdFromToken);
-                    if (userToDelete == null)
-                        throw new Exception("User not found.");
+                //if (role == "Admin")
+                //{
+                var userToDelete = _userrepo.GetUserById(userIdFromToken);
+                if (userToDelete == null)
+                    throw new Exception("User not found.");
 
-                    userToDelete.IsDeleted = true;
-                    _userrepo.Update(userToDelete);
-                    return true;
-                }
-                throw new UnauthorizedAccessException("You do not have permission to delete this user.");
+                userToDelete.IsDeleted = true;
+                _userrepo.Update(userToDelete);
+                return true;
+                //}
+                //throw new UnauthorizedAccessException("You do not have permission to delete this user.");
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -316,6 +315,7 @@ namespace OutsourcingSystem.Services
         {
             try
             {
+
                 var userToUpdate = _userrepo.GetUserById(userIdFromToken);
 
                 if (userToUpdate == null)
@@ -323,7 +323,7 @@ namespace OutsourcingSystem.Services
                     throw new Exception("User not found.");
                 }
 
-                if (userToUpdate.IsDeleted==true)
+                if (userToUpdate.IsDeleted == true)
                 {
                     throw new Exception("Cannot update a deleted account. Please log out.");
                 }

@@ -42,6 +42,9 @@ namespace OutsourcingSystem.Repositories
                 throw new Exception($"An error happen while retrieving the client with ID {id}.", ex);
             }
         }
+
+
+
         public Client GetByuid(int id)
         {
             try
@@ -82,10 +85,10 @@ namespace OutsourcingSystem.Repositories
             }
         }
 
-        public IEnumerable<Client> GetUnapprovedClients()
-        {
-            return _context.Client.Where(c => !c.IsApprove && !c.IsDeleted).ToList();
-        }
+        //public IEnumerable<Client> GetUnapprovedClients()
+        //{
+        //    return _context.Client.Where(c => !c.IsApprove && !c.IsDeleted).ToList();
+        //}
         // Adds a new client to the database and saves changes
         public void Add(Client client)
         {

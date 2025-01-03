@@ -9,9 +9,9 @@ namespace OutsourcingSystem.Services
         ClientDTO GetClientById(int id);
         IEnumerable<ClientDTO> GetClientsByIndustry(string industry);
         IEnumerable<ClientDTO> GetClientsByRating(decimal rating);
-        public void RegisterClient(UserInputDto client);
+         void RegisterClient(UserInputDto client);
         void SoftDeleteClient(int id);
-        void UpdateClient(int id, ClientDTO updatedClientDto);
+        void UpdateClient(int id, UpdateClientData updatedClientDto);
 
        
 

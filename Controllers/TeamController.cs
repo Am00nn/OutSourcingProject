@@ -37,28 +37,28 @@ namespace OutsourcingSystem.Controllers
 
         }
 
-        [HttpPatch("Update Team")]
-        public IActionResult UpdateTeam(int TeamID, TeamUpdateDTO team) //Taking the ID of the old team and the new values of the team 
-        {
-            try
-            {
-                var Role = User.FindFirst(ClaimTypes.Role)?.Value;
+        //[HttpPatch("Update Team")]
+        //public IActionResult UpdateTeam(int TeamID, TeamUpdateDTO team) //Taking the ID of the old team and the new values of the team 
+        //{
+        //    try
+        //    {
+        //        var Role = User.FindFirst(ClaimTypes.Role)?.Value;
 
-                if (Role == "Admin")
-                {
-                    var AdminID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        //        if (Role == "Admin")
+        //        {
+        //            var AdminID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                    int result = _teamService.UpdateTeam(TeamID, AdminID, team);
+        //            int result = _teamService.UpdateTeam(TeamID, AdminID, team);
 
-                    if (result == 0) { return Ok("Updated!"); }
-                    else { return BadRequest("<!>Inputted team ID is invalid<!>"); }
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //            if (result == 0) { return Ok("Updated!"); }
+        //            else { return BadRequest("<!>Inputted team ID is invalid<!>"); }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
 
         [HttpDelete("Soft Delete")] //Allows the admin to deactivate a team without deleting it completely

@@ -9,28 +9,34 @@ namespace OutsourcingSystem.Services
         private readonly IClientRequestDeveloperRepository _developerRequestRepository;
         private readonly IClientRequestTeamRepository _teamRequestRepository;
         private readonly IEmailService _emailService;
+        private readonly IClientRepository _clientRepository;
+        private readonly IUserServices _userServices;
+
 
         public RequestService(
             IClientRequestDeveloperRepository developerRequestRepository,
             IClientRequestTeamRepository teamRequestRepository,
-            IEmailService emailService)
+            IEmailService emailService, IClientRepository clientRepository, IUserServices userServices)
         {
             _developerRequestRepository = developerRequestRepository;
             _teamRequestRepository = teamRequestRepository;
             _emailService = emailService;
+             _clientRepository = clientRepository;
+            _userServices = userServices;
         }
 
-        public async Task SubmitRequestAsync(RequestDto requestDto, int clientId)
+        public async Task SubmitRequestAsync(RequestDto requestDto, int userid)
         {
             // Ensure ClientID is not null
-            if (clientId == 0)
+            if (userid == 0)
             {
                 throw new InvalidOperationException("ClientID cannot be null.");
             }
 
             // Convert ClientID from nullable to non-nullable
-            // int clientId = requestDto.ClientID.Value;
-
+            int clientId = _clientRepository.GetByuid(userid).ClientID;
+            string email= _userServices.GetEmail(userid);
+            
             if (requestDto.RequestType == "Developer")
             {
                 var developerRequest = new ClientRequestDeveloper
@@ -56,7 +62,7 @@ namespace OutsourcingSystem.Services
                 await _teamRequestRepository.AddRequestAsync(teamRequest);
             }
 
-            await _emailService.SendEmailAsync("amanialshmali7@gmail.com", "New Request Submitted", "A new request has been submitted.");
+            await _emailService.SendEmailAsync(email, "New Request Submitted", "A new request has been submitted.");
         }
 
         public async Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType)

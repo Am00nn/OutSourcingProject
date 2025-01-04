@@ -47,7 +47,6 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IDeveloperServices, DeveloperServices>();
-
             builder.Services.AddScoped<IDeveloperRepositry, DeveloperRepositry>();
 
             builder.Services.AddScoped<IRequestService, RequestService>();

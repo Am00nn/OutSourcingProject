@@ -16,7 +16,6 @@ namespace OutsourcingSystem.Services
             _userRepositry = userRepositry;
             _developerRepositry = developerRepositry;
 
-
         }
         public void RegisterDeveloper(UserDeveloperInputDto input)
         {
@@ -102,17 +101,287 @@ namespace OutsourcingSystem.Services
                 Specialization = input.Specialization,
                 YearsOfExperience = input.YearsOfExperience,
                 HourlyRate = input.HourlyRate,
-               // AvailabilityStatus = input.AvailabilityStatus,
+                // AvailabilityStatus = input.AvailabilityStatus,
                 CareerSummary = input.CareerSummary,
-              //  CompletedProjects = input.CompletedProjects,
-               // CanBePartOfTeam = input.CanBePartOfTeam,
+                //  CompletedProjects = input.CompletedProjects,
+                // CanBePartOfTeam = input.CanBePartOfTeam,
                 DocumentLink = input.DocumentLink,
             };
 
             _developerRepositry.Add(developer);
         }
+        public void UpdateDeveloper(int id, UpdateDeveInput updateDeveloper)
+        {
+            try
+            {
+                // Ensure the provided updated developer data is not null
+                if (updateDeveloper == null)
+                    throw new ArgumentNullException(nameof(updateDeveloper), "Updated developer data cannot be null.");
+
+                // Get the existing developer from the repository using ID
+                var developer = _developerRepositry.GetUserById(id);
+
+                if (developer == null)
+                    throw new KeyNotFoundException($"Developer with ID {id} not found.");
+
+                if (developer.IsDelete == true)
+                {
+                    throw new Exception("Cannot update a deleted account. Please log out.");
+                }
+
+                // Update developer fields only if new values are provided
+                if (!string.IsNullOrEmpty(updateDeveloper.DeveloperName))
+                    developer.DeveloperName = updateDeveloper.DeveloperName;
+
+                if (updateDeveloper.AvailabilityStatus != null)
+                    developer.AvailabilityStatus = updateDeveloper.AvailabilityStatus.Value;
+
+                if (updateDeveloper.Age != null)
+                    developer.Age = updateDeveloper.Age.Value;
+
+                if (!string.IsNullOrEmpty(updateDeveloper.Specialization))
+                    developer.Specialization = updateDeveloper.Specialization;
+
+                if (updateDeveloper.YearsOfExperience != null)
+                    developer.YearsOfExperience = updateDeveloper.YearsOfExperience.Value;
+
+                if (!string.IsNullOrEmpty(updateDeveloper.DocumentLink))
+                    developer.DocumentLink = updateDeveloper.DocumentLink;
+
+                if (!string.IsNullOrEmpty(updateDeveloper.CareerSummary))
+                    developer.CareerSummary = updateDeveloper.CareerSummary;
+
+                if (updateDeveloper.HourlyRate != null)
+                    developer.HourlyRate = updateDeveloper.HourlyRate.Value;
+
+                // Update the last updated timestamp
+                developer.UpdateDate = DateTime.Now;
+
+                // Update the developer in the repository
+                _developerRepositry.Update(developer);
 
 
 
+            }
+            catch (ArgumentNullException ex)
+            {
+
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            catch (KeyNotFoundException ex)
+            {
+
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw;
+            }
+        }
+        public void SoftDeleteClient(int id)
+        {
+            // Validate the client ID to ensure >1 
+            if (id <= 0)
+                throw new ArgumentException("developer ID must be greater than zero.");
+
+            try
+            {
+                // get the client by ID from the repository
+                var developer = _developerRepositry.GetUserById(id);
+
+                // Check if the client exists
+                if (developer == null)
+                    throw new KeyNotFoundException($"developer with ID {id} not found.");
+
+                // Mark the client as soft-deleted in the repository
+                _developerRepositry.Delete(developer);
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"An error occurred while soft-deleting the developer with ID {id}.", ex);
+            }
+        }
+        public IEnumerable<filtrationDeveloperdto> GetAlldeveloper(string name, string speclization, decimal? rating, bool? availiabilty, int pageNumber = 1, int pageSize = 10)
+        {
+            // Validate pagination parameters to ensure they are positive integers
+
+            if (pageNumber <= 0 || pageSize <= 0)
+                throw new ArgumentException("Page number and page size must be greater than zero.");
+
+            try
+            {
+                // get all clients from the repository and convert to a query object
+
+                var query = _developerRepositry.GetAll().AsQueryable();
+
+                // Filter by name if a name is provided
+                if (!string.IsNullOrEmpty(name))
+                    query = query.Where(c => c.DeveloperName.Contains(name, StringComparison.OrdinalIgnoreCase));
+
+                // Filter by industry if an industry is provided
+                if (!string.IsNullOrEmpty(speclization))
+                    query = query.Where(c => c.Specialization.Contains(speclization));
+
+                // Filter by rating if a rating is provided
+                if (rating.HasValue)
+                    query = query.Where(c => c.HourlyRate >= rating);
+
+                // Filter by rating if a rating is provided
+                if (availiabilty.HasValue)
+                    query = query.Where(c => c.AvailabilityStatus == true);
+
+
+                // Apply pagination
+
+                return query
+                    .Skip((pageNumber - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(c => new filtrationDeveloperdto        // Map the Client entity to ClientDTO
+                    {
+                        DeveloperName = c.DeveloperName,
+                        Specialization = c.Specialization,
+                        CommitmentRating = c.CommitmentRating,
+                        AvailabilityStatus = c.AvailabilityStatus,
+                        CompletedProjects = c.CompletedProjects,
+
+
+                    })
+                    .ToList(); // Execute the query and return the results as a list
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("An error occurred while retrieving clients.", ex);
+            }
+        }
+        public IEnumerable<filtrationDeveloperdto> GetName(string name)
+        {
+            // Validate the industry parameter to ensure it not null 
+
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("nameof developer cannot be null or empty.");
+
+            try
+            {
+                // get clients by industry from the repository
+
+                // Map the result to a collection of ClientDTO 
+                return _developerRepositry.GetNameDeveloper(name).Select(c => new filtrationDeveloperdto
+                {
+                    DeveloperName = c.DeveloperName,
+                    Specialization = c.Specialization,
+                    CommitmentRating = c.CommitmentRating,
+                    AvailabilityStatus = c.AvailabilityStatus,
+                    CompletedProjects = c.CompletedProjects,
+
+                    // Assign the creation date
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"An error occurred while retrieving developer in the industry '{name}'.", ex);
+            }
+        }
+        public IEnumerable<filtrationDeveloperdto> GetSpecilization(string spec)
+        {
+            // Validate the industry parameter to ensure it not null 
+
+            if (string.IsNullOrEmpty(spec))
+                throw new ArgumentException("nameof developer cannot be null or empty.");
+
+            try
+            {
+                // get clients by industry from the repository
+
+                // Map the result to a collection of ClientDTO 
+                return _developerRepositry.GetSpec(spec).Select(c => new filtrationDeveloperdto
+                {
+                    DeveloperName = c.DeveloperName,
+                    Specialization = c.Specialization,
+                    CommitmentRating = c.CommitmentRating,
+                    AvailabilityStatus = c.AvailabilityStatus,
+                    CompletedProjects = c.CompletedProjects,
+
+                    // Assign the creation date
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"An error occurred while retrieving developer in the specilization '{spec}'.", ex);
+            }
+        }
+        public IEnumerable<filtrationDeveloperdto> GetByAvailability(bool av)
+        {
+            // Validate the industry parameter to ensure it not null 
+
+            if (av == null)
+                throw new ArgumentException("nameof developer cannot be null or empty.");
+
+            try
+            {
+                // get clients by industry from the repository
+
+                // Map the result to a collection of ClientDTO 
+                return _developerRepositry.Getavailibilty(av).Select(c => new filtrationDeveloperdto
+                {
+                    DeveloperName = c.DeveloperName,
+                    Specialization = c.Specialization,
+                    CommitmentRating = c.CommitmentRating,
+                    AvailabilityStatus = c.AvailabilityStatus,
+                    CompletedProjects = c.CompletedProjects,
+
+                    // Assign the creation date
+                });
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"An error occurred while retrieving developer in the availabilty '{av}'.", ex);
+            }
+        }
+
+        public IEnumerable<filtrationDeveloperdto> Getrate(decimal rating)
+        { 
+            if (rating == null)
+            
+                // Validate the industry parameter to ensure it not null 
+
+                throw new ArgumentException("nameof developer cannot be null or empty.");
+                try
+                {
+
+                    return _developerRepositry.getrate(rating).Select(c => new filtrationDeveloperdto
+                    {
+                        DeveloperName = c.DeveloperName,
+                        Specialization = c.Specialization,
+                        CommitmentRating = c.CommitmentRating,
+                        AvailabilityStatus = c.AvailabilityStatus,
+
+
+
+                    });
+                }
+                catch (Exception ex)
+                {
+
+                    throw new Exception($"An error occurred while retrieving developer in the rating '{rating}'.", ex);
+                }
+            
+        }
     }
 }
+
+    
+
+
+
+

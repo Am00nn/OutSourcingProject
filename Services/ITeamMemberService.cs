@@ -11,5 +11,7 @@ namespace OutsourcingSystem.Services
         int GetNoTakenSlots(int TeamID);
         bool CheckTMinTeam(int TeamID, int devID);
         List<TeamMember> GetTeamMemberByTeamID(int TeamID);
+        int IsDevInTeam(int devID);
+
     }
 }

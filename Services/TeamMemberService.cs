@@ -95,5 +95,12 @@ namespace OutsourcingSystem.Services
             var teamFound =  _teammemberRepository.CheckTMinTeam(TeamID, devID);
             return teamFound==true? true : false;
         }
+
+        //returns team ID if found
+        public int IsDevInTeam(int devID)
+        {
+            TeamMember teamM = _teammemberRepository.GetTeamByDeveloperID(devID);
+            return teamM == null ? 0 : teamM.TeamID;
+        }
     }
 }

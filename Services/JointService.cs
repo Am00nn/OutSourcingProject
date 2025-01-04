@@ -11,13 +11,17 @@ namespace OutsourcingSystem.Services
         private readonly ITeamMemberService _teamMemberService;
         private readonly IReviewTeamService _reviewTeamService;
         private readonly IReviewDeveloperService _reviewDevService;
+        private readonly IFeedBackOnClientService _feedbackService;
         //private readonly IDeveloperService _developerService;
-        public JointService(ITeamService teamService, ITeamMemberService teamMemberService, IReviewTeamService reviewteamservice, IReviewDeveloperService reviewDeveloperService)
+        public JointService(ITeamService teamService, ITeamMemberService teamMemberService,
+            IReviewTeamService reviewteamservice, IReviewDeveloperService reviewDeveloperService,
+            IFeedBackOnClientService feedback)
         {
             _teamMemberService = teamMemberService;
             _teamService = teamService;
             _reviewTeamService = reviewteamservice;
             _reviewDevService = reviewDeveloperService;
+            _feedbackService = feedback;
         }
 
         public string AddTeamMemberToTeam(int developerID, int teamID)
@@ -162,6 +166,32 @@ namespace OutsourcingSystem.Services
             }
 
             else return "<!>This review does not exist<!>";
+        }
+
+        //Checks if client is on team and if team worked on a project with this client 
+        public int FeedbackValidation(int DevID, FeedBackOnClientDTO feedback)
+        {
+            int OnTeam = _teamMemberService.IsDevInTeam(DevID);
+
+            //Add a check to see if this team worked on a project with this client 
+            //Can't add it now because project is not complete but will add later on 
+
+           return _feedbackService.AddFeedbackOnClient(DevID, feedback, OnTeam);
+        }
+
+        public int UpdateFeebackOnClient(int DevID,FeedBackOnClientDTO feedback)
+        {
+            return _feedbackService.UpdateFeedback(DevID, feedback);
+        }
+
+        public string DeleteFeedbackOnClient(int DevID, int clientID)
+        {
+            return _feedbackService.DeleteFeedback(clientID, DevID);
+        }
+
+        public List<FeedbackOnClient> GetClientFeedback(int Page, int PageSize, int? Rating, int? ClientID)
+        {
+            return _feedbackService.GetAllFeedbacks(Page, PageSize, Rating, ClientID);
         }
     }
 }

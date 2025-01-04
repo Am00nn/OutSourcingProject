@@ -152,7 +152,7 @@ namespace OutsourcingSystem.Controllers
         }
 
         [HttpGet("GetClientById")]
-        [Authorize(Roles = "Developer, Admin")]
+      //  [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientById()
         {
             try
@@ -174,7 +174,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [HttpGet("by-industry")]
-        [Authorize(Roles = "Developer, Admin")]
+       // [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientsByIndustry([FromQuery] string industry)
         {
             if (string.IsNullOrEmpty(industry))
@@ -197,7 +197,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [HttpGet("by-rating")]
-        [Authorize(Roles = "Developer, Admin")]
+        //[Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientsByRating([FromQuery] decimal rating)
         {
             if (rating < 0)

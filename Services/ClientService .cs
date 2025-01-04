@@ -242,7 +242,7 @@ namespace OutsourcingSystem.Services
         }
 
 
-        public IEnumerable<ClientDTO> GetClientsByIndustry(string industry)
+        public IEnumerable<ClientByIndestry> GetClientsByIndustry(string industry)
         {
             // Validate the industry parameter to ensure it not null 
 
@@ -254,17 +254,15 @@ namespace OutsourcingSystem.Services
                 // get clients by industry from the repository
 
                 // Map the result to a collection of ClientDTO 
-                return _clientRepository.GetByIndustry(industry).Select(c => new ClientDTO
+                return _clientRepository.GetByIndustry(industry).Select(c => new  ClientByIndestry
                 {
-                    ClientID = c.ClientID,        // Assign the client ID
+                   ClientID= c.ClientID,
+                   CompanyName= c.CompanyName,
+                   Industry = industry,
+                   Rating = c.CommitmentRating,
+                   CreatedAt = c.CreatedAt
 
-                    CompanyName = c.CompanyName, // Assign the company name
-
-                    Industry = c.Industry,       // Assign the industry
-
-                    Rating = c.CommitmentRating,           // Assign the rating
-
-                    CreatedAt = c.CreatedAt      // Assign the creation date
+                    // Assign the creation date
                 });
             }
             catch (Exception ex)
@@ -291,6 +289,7 @@ namespace OutsourcingSystem.Services
                 return new ClientDTO
                 {
                     ClientID = client.ClientID,
+                     userid=id,
                     CompanyName = client.CompanyName,
                     Industry = client.Industry,
                     Rating = client.CommitmentRating,
@@ -318,7 +317,7 @@ namespace OutsourcingSystem.Services
 
 
 
-        public IEnumerable<ClientDTO> GetClientsByRating(decimal rating)
+        public IEnumerable<ClientByIndestry> GetClientsByRating(decimal rating)
         {
             // Validate input Rating must not be negative.
 
@@ -329,7 +328,7 @@ namespace OutsourcingSystem.Services
             {
                 // get clients from the repository with a rating >= the specified value.
 
-                return _clientRepository.GetByRating(rating).Select(c => new ClientDTO
+                return _clientRepository.GetByRating(rating).Select(c => new ClientByIndestry
                 {
                     ClientID = c.ClientID,              // Map ClientID
                     CompanyName = c.CompanyName,        // Map Company Name

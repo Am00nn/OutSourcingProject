@@ -65,13 +65,13 @@ namespace OutsourcingSystem.Repositories
             }
         }
 
-        public List<User> GetAllUsers(int iduser)
+        public List<User> GetAllUsers( )
         {
             try
             {
                 // Query the database to find users with the specified user ID
                 return _context.Users
-                    .Where(u => u.UID == iduser) // Filter users by the provided user ID
+                     // Filter users by the provided user ID
                     .ToList(); // Convert the result to a list
             }
             catch (Exception ex)
@@ -104,7 +104,10 @@ namespace OutsourcingSystem.Repositories
             _context.Users.Update(user);
             _context.SaveChanges();
         }
-
+        public string GetUserEmail(int userid)
+        {
+          return GetUserById(userid).Email; 
+        }
 
         public bool Delete(User user)
         {

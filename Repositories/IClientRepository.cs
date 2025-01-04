@@ -12,6 +12,6 @@ namespace OutsourcingSystem.Repositories
         void SoftDelete(Client client);
         void Update(Client client);
         public Client GetByuid(int id);
-        public IEnumerable<Client> GetUnapprovedClients();
+      //  public IEnumerable<Client> GetUnapprovedClients();
     }
 }

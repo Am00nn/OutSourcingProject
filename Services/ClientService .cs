@@ -105,7 +105,7 @@ namespace OutsourcingSystem.Services
 
        
 
-        public void UpdateClient(int id, ClientDTO updatedClientDto)
+        public void UpdateClient(int id, UpdateClientData updatedClientDto)
         {
             try
             {
@@ -116,16 +116,21 @@ namespace OutsourcingSystem.Services
                     throw new ArgumentNullException(nameof(updatedClientDto), "Updated client data cannot be null.");
 
                 // get the existing client from the repository using  ID
-                var client = _clientRepository.GetById(id);
+                var client = _clientRepository.GetByuid(id);
 
                 if (client == null)
 
                     throw new KeyNotFoundException($"Client with ID {id} not found.");
 
+                if (client.IsDeleted == true)
+                {
+                    throw new Exception("Cannot update a deleted account. Please log out.");
+                }
+
                 // Update client fields only if new values are provided, otherwise retain existing values
                 client.CompanyName = updatedClientDto.CompanyName ?? client.CompanyName;
                 client.Industry = updatedClientDto.Industry ?? client.Industry;
-
+                client.UpdateDate=DateTime.Now;
                 // Update the client in the repository
                 _clientRepository.Update(client);
 
@@ -171,7 +176,7 @@ namespace OutsourcingSystem.Services
             try
             {
                 // get the client by ID from the repository
-                var client = _clientRepository.GetById(id);
+                var client = _clientRepository.GetByuid(id);
 
                 // Check if the client exists
                 if (client == null)
@@ -208,7 +213,7 @@ namespace OutsourcingSystem.Services
 
                 // Filter by industry if an industry is provided
                 if (!string.IsNullOrEmpty(industry))
-                    query = query.Where(c => c.Industry.Contains(industry, StringComparison.OrdinalIgnoreCase));
+                    query = query.Where(c => c.Industry.Contains(industry));
 
                 // Filter by rating if a rating is provided
                 if (rating.HasValue)
@@ -221,7 +226,8 @@ namespace OutsourcingSystem.Services
                     .Select(c => new ClientDTO        // Map the Client entity to ClientDTO
                     {
                         ClientID = c.ClientID,
-                        CompanyName = c.CompanyName,
+                        userid=c.UID,
+                       CompanyName = c.CompanyName,
                         Industry = c.Industry,
                         Rating = c.CommitmentRating,
                         CreatedAt = c.CreatedAt
@@ -236,7 +242,7 @@ namespace OutsourcingSystem.Services
         }
 
 
-        public IEnumerable<ClientDTO> GetClientsByIndustry(string industry)
+        public IEnumerable<ClientByIndestry> GetClientsByIndustry(string industry)
         {
             // Validate the industry parameter to ensure it not null 
 
@@ -248,17 +254,15 @@ namespace OutsourcingSystem.Services
                 // get clients by industry from the repository
 
                 // Map the result to a collection of ClientDTO 
-                return _clientRepository.GetByIndustry(industry).Select(c => new ClientDTO
+                return _clientRepository.GetByIndustry(industry).Select(c => new  ClientByIndestry
                 {
-                    ClientID = c.ClientID,        // Assign the client ID
+                   ClientID= c.ClientID,
+                   CompanyName= c.CompanyName,
+                   Industry = industry,
+                   Rating = c.CommitmentRating,
+                   CreatedAt = c.CreatedAt
 
-                    CompanyName = c.CompanyName, // Assign the company name
-
-                    Industry = c.Industry,       // Assign the industry
-
-                    Rating = c.CommitmentRating,           // Assign the rating
-
-                    CreatedAt = c.CreatedAt      // Assign the creation date
+                    // Assign the creation date
                 });
             }
             catch (Exception ex)
@@ -277,7 +281,7 @@ namespace OutsourcingSystem.Services
                     throw new ArgumentException("The client ID must be greater than 0.", nameof(id));
 
                 // Retrieve the client from the repository
-                var client = _clientRepository.GetById(id);
+                var client = _clientRepository.GetByuid(id);
                 if (client == null)
                     throw new KeyNotFoundException($"Client with ID {id} not found.");
 
@@ -285,6 +289,7 @@ namespace OutsourcingSystem.Services
                 return new ClientDTO
                 {
                     ClientID = client.ClientID,
+                     userid=id,
                     CompanyName = client.CompanyName,
                     Industry = client.Industry,
                     Rating = client.CommitmentRating,
@@ -312,7 +317,7 @@ namespace OutsourcingSystem.Services
 
 
 
-        public IEnumerable<ClientDTO> GetClientsByRating(decimal rating)
+        public IEnumerable<ClientByIndestry> GetClientsByRating(decimal rating)
         {
             // Validate input Rating must not be negative.
 
@@ -323,7 +328,7 @@ namespace OutsourcingSystem.Services
             {
                 // get clients from the repository with a rating >= the specified value.
 
-                return _clientRepository.GetByRating(rating).Select(c => new ClientDTO
+                return _clientRepository.GetByRating(rating).Select(c => new ClientByIndestry
                 {
                     ClientID = c.ClientID,              // Map ClientID
                     CompanyName = c.CompanyName,        // Map Company Name

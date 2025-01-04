@@ -43,9 +43,11 @@ namespace OutsourcingSystem.Controllers
             try
             {
                 var Role = User.FindFirst(ClaimTypes.Role)?.Value;
+
                 if (Role == "Admin")
                 {
-                   var AdminID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                    var AdminID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
                     int result = _teamService.UpdateTeam(TeamID, AdminID, team);
 
                     if (result == 0) { return Ok("Updated!"); }

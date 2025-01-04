@@ -6,7 +6,7 @@ namespace OutsourcingSystem.Repositories
     {
         void Add(Developer developer);
         Developer GetById(int id);
-        public void Update(Developer dev);
-        public IEnumerable<Developer> GetUnapproveddeveloper();
+        void Update(Developer dev);
+       // IEnumerable<Developer> GetUnapproveddeveloper();
     }
 }

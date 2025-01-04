@@ -7,11 +7,11 @@ namespace OutsourcingSystem.Services
     {
         IEnumerable<ClientDTO> GetAllClients(string name, string industry, decimal? rating, int pageNumber, int pageSize);
         ClientDTO GetClientById(int id);
-        IEnumerable<ClientDTO> GetClientsByIndustry(string industry);
-        IEnumerable<ClientDTO> GetClientsByRating(decimal rating);
-        public void RegisterClient(UserInputDto client);
+        IEnumerable<ClientByIndestry> GetClientsByIndustry(string industry);
+        IEnumerable<ClientByIndestry> GetClientsByRating(decimal rating);
+         void RegisterClient(UserInputDto client);
         void SoftDeleteClient(int id);
-        void UpdateClient(int id, ClientDTO updatedClientDto);
+        void UpdateClient(int id, UpdateClientData updatedClientDto);
 
        
 

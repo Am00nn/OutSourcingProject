@@ -1,10 +1,8 @@
 ﻿namespace OutsourcingSystem.DTOs
 {
-    public class ClientDTO
+    public class ClientByIndestry
     {
-   
-       public int ClientID { get; set; }
-        public int userid { get; set; }
+        public int ClientID { get; set; }
         public string CompanyName { get; set; }
         public string Industry { get; set; }
         public decimal? Rating { get; set; }

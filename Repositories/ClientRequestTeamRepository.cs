@@ -27,5 +27,10 @@ namespace OutsourcingSystem.Repositories
             _context.ClientRequestTeam.Update(request);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<ClientRequestTeam>> GetPendingRequestsAsync()
+        {
+            return await Task.Run(() => _context.ClientRequestTeam.Where(req => req.Status == "Pending").ToList());
+        }
     }
 }

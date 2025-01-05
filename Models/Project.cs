@@ -40,5 +40,8 @@ namespace OutsourcingSystem.Models
         [Required(ErrorMessage = "Daily hours needed is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Daily hours needed must be at least 1.")]
         public int DailyHoursNeeded { get; set; }
+
+        public DateTime? UpdateDate { get; set; }   
+        public bool? IsDelete { get; set; }
     }
 }

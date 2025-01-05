@@ -1,4 +1,5 @@
-﻿using DocuSign.eSign.Model;
+﻿using System.Linq;
+using DocuSign.eSign.Model;
 using OutsourcingSystem.Configurations;
 using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Models;
@@ -41,7 +42,7 @@ namespace OutsourcingSystem.Services
             _projectServieces = projectServieces;
         }
 
-        public async Task SubmitRequestAsync(RequestDto requestDto, int userid,ProjectInputDto project)
+        public async Task SubmitRequestAsync( int userid,ProjectRequestInputDto project)
         {
             if (userid == 0)
             {
@@ -51,9 +52,9 @@ namespace OutsourcingSystem.Services
             int clientId = _clientRepository.GetByuid(userid).ClientID;
             string email = _userServices.GetEmail(userid);
 
-            if (requestDto.RequestType == "Developer")
+            if (project.RequestType == "Developer")
             {
-                var developer = _developerRepository.GetById(requestDto.developerid ?? 0);
+                var developer = _developerRepository.GetById(project.Developerid ?? 0);
                 if (developer == null || !developer.AvailabilityStatus)
                 {
                     throw new InvalidOperationException("The selected developer is not available for booking.");
@@ -62,17 +63,19 @@ namespace OutsourcingSystem.Services
                 var developerRequest = new ClientRequestDeveloper
                 {
                     ClientID = clientId,
-                    DeveloperID = requestDto.developerid ?? 0,
-                    StartDate = requestDto.StartDate,
-                    EndDate = requestDto.EndDate,
+                    DeveloperID = project.Developerid ?? 0,
+                    StartDate = project.StartAt,
+                    EndDate = project.EndAt,
                     Status = "Pending"
                 };
+
+           
                 await _developerRequestRepository.AddRequestAsync(developerRequest);
-                _projectServieces.AddProject(clientId, project);
+               
             }
-            else if (requestDto.RequestType == "Team")
+            else if (project.RequestType == "Team")
             {
-                var team = _teamRepository.GetTeamByID(requestDto.TeamID ?? 0);
+                var team = _teamRepository.GetTeamByID(project.Teamid ?? 0);
                 if (team == null || !team.IsAvailable)
                 {
                     throw new InvalidOperationException("The selected team is not available for booking.");
@@ -81,39 +84,40 @@ namespace OutsourcingSystem.Services
                 var teamRequest = new ClientRequestTeam
                 {
                     ClientID = clientId,
-                    TID = requestDto.TeamID ?? 0,
-                    StartDate = requestDto.StartDate,
-                    EndDate = requestDto.EndDate,
+                    TID = project.Teamid ?? 0,
+                    StartDate = project.StartAt,
+                    EndDate = project.EndAt,
                     Status = "Pending"
                 };
                 await _teamRequestRepository.AddRequestAsync(teamRequest);
-                _projectServieces.AddProject(clientId, project);
+             //   _projectServieces.AddProject(clientId, project);
             }
 
             string clientEmailMessage =
             $"Dear Client,\n\n" +
             $"Your request has been submitted successfully. Below are the details of your request:\n\n" +
-            $"- Request Type: {requestDto.RequestType}\n" +
-            $"- Start Date: {requestDto.StartDate.ToShortDateString()}\n" +
-            $"- End Date: {requestDto.EndDate.ToShortDateString()}\n" +
+            $"- Request Type: {project.RequestType}\n" +
+            $"- Start Date: {project.StartAt.ToShortDateString()}\n" +
+            $"- End Date: {project.EndAt.Value.ToShortDateString()}\n" +
             "\nWe will notify you once your request is processed. Thank you for choosing our service.";
 
             await _emailService.SendEmailAsync(email, "New Request Submitted", clientEmailMessage);
-            
-            
+
+
             string adminEmail = "amanialshmali7@gmail.com";
 
             string adminEmailMessage =
             $"Dear Admin,\n\n" +
            $"A new request has been submitted. Below are the details:\n\n" +
-           $"- Request Type: {requestDto.RequestType}\n" +
+           $"- Request Type: {project.RequestType}\n" +
            $"- Client ID: {clientId}\n" +
-           $"- Start Date: {requestDto.StartDate.ToShortDateString()}\n" +
-           $"- End Date: {requestDto.EndDate.ToShortDateString()}\n" +
+           $"- Start Date: {project.StartAt.ToShortDateString()}\n" +
+           $"- End Date: {project.EndAt.Value.ToShortDateString()}\n" +
            "\nPlease review the request and take the necessary actions.";
 
             await _emailService.SendEmailAsync(adminEmail, "New Request Submitted", adminEmailMessage);
 
+            _projectServieces.AddProject(clientId, project);
         }
 
         public async Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType)
@@ -175,22 +179,61 @@ namespace OutsourcingSystem.Services
                 clientEmail = user?.Email ?? throw new InvalidOperationException("Client email not found.");
             }
 
-                string clientStatusMessage =
-                isAccepted
-                  ? $"Dear Client,\n\nYour request of type '{requestType}' has been approved successfully. Below are the details:\n\n" +
-                  $"- Request Type: {requestType}\n" +
-                  $"- Request ID: {requestId}\n" +
-                  $"- Status: Approved\n\n" +
-                  "Thank you for choosing our service. If you have any questions, please contact support."
-                  : $"Dear Client,\n\nWe regret to inform you that your request of type '{requestType}' has been rejected. Below are the details:\n\n" +
-                  $"- Request Type: {requestType}\n" +
-                  $"- Request ID: {requestId}\n" +
-                  $"- Status: Rejected\n\n" +
-                  "We apologize for any inconvenience caused. Please contact support for more details.";
+            string clientStatusMessage =
+            isAccepted
+              ? $"Dear Client,\n\nYour request of type '{requestType}' has been approved successfully. Below are the details:\n\n" +
+              $"- Request Type: {requestType}\n" +
+              $"- Request ID: {requestId}\n" +
+              $"- Status: Approved\n\n" +
+              "Thank you for choosing our service. If you have any questions, please contact support."
+              : $"Dear Client,\n\nWe regret to inform you that your request of type '{requestType}' has been rejected. Below are the details:\n\n" +
+              $"- Request Type: {requestType}\n" +
+              $"- Request ID: {requestId}\n" +
+              $"- Status: Rejected\n\n" +
+              "We apologize for any inconvenience caused. Please contact support for more details.";
 
-                 await _emailService.SendEmailAsync(clientEmail, "Request Status Update", clientStatusMessage);
+            await _emailService.SendEmailAsync(clientEmail, "Request Status Update", clientStatusMessage);
 
         }
+
+        public async Task<IEnumerable<PendingRequestDto>> GetPendingRequestsAsync()
+        {
+            var developerRequests = await _developerRequestRepository.GetPendingRequestsAsync();
+
+            var teamRequests = await _teamRequestRepository.GetPendingRequestsAsync();
+
+
+            developerRequests = developerRequests ?? new List<ClientRequestDeveloper>();
+            teamRequests = teamRequests ?? new List<ClientRequestTeam>();
+
+            var pendingDeveloperRequests = developerRequests
+                .Where(req => req.Status == "Pending")
+                .Select(req => new PendingRequestDto
+                {
+                    RequestId = req.RequestID,
+                    Type = "Developer",
+                    ClientID = req.ClientID,
+                    StartDate = req.StartDate,
+                    EndDate = req.EndDate,
+                    Status = req.Status
+                });
+
+            var pendingTeamRequests = teamRequests
+                .Where(req => req.Status == "Pending")
+                .Select(req => new PendingRequestDto
+                {
+                    RequestId = req.RequestID,
+                    Type = "Team",
+                    ClientID = req.ClientID,
+                    StartDate = req.StartDate,
+                    EndDate = req.EndDate ?? DateTime.MaxValue,
+                    Status = req.Status
+                });
+
+            return pendingDeveloperRequests.Concat(pendingTeamRequests);
+        }
+
+
 
 
 

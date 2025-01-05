@@ -22,7 +22,7 @@ namespace OutsourcingSystem.Controllers
 
         [Authorize(Roles = "Client")]
         [HttpPost("SubmitRequest")]
-        public async Task<IActionResult> SubmitRequest([FromQuery] RequestDto requestDto, [FromQuery] ProjectInputDto projectInputDto)
+        public async Task<IActionResult> SubmitRequest([FromBody] ProjectRequestInputDto projectInputDto)
         {
             // Extract ClientID from Token
             var clientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -37,7 +37,8 @@ namespace OutsourcingSystem.Controllers
                 return BadRequest("Invalid data.");
 
            // _projectService.AddProject();
-            await _requestService.SubmitRequestAsync(requestDto, int.Parse(clientId), projectInputDto);
+            await _requestService.SubmitRequestAsync(int.Parse(clientId), projectInputDto);
+            _projectService.AddProject(int.Parse(clientId), projectInputDto);
             return Ok("Request submitted successfully.");
         }
 
@@ -56,6 +57,16 @@ namespace OutsourcingSystem.Controllers
 
             return Ok("Request processed successfully.");
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("ViweRequestpending")]
+        public async Task<IActionResult> GetPendingRequests()
+        {
+            var pendingRequests = await _requestService.GetPendingRequestsAsync();
+
+            return Ok(pendingRequests);
+        }
+
     }
 
 }

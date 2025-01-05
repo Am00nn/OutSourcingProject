@@ -31,7 +31,7 @@ namespace OutsourcingSystem.Models
         public DateTime? EndAt { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
-        public string Status { get; set; } // Pending, Ongoing, Completed
+        public string Status { get; set; } = "Ongoing"; // Pending, Ongoing, Completed
 
         [ForeignKey(nameof(Developer))]
         public int? DeveloperID { get; set; }

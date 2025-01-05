@@ -73,7 +73,8 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<IReviewDevRepository, ReviewDevRepository>();
             builder.Services.AddScoped<IFeedBackOnClientRepository, FeedBackOnClientRepository>();
             builder.Services.AddScoped<IDeveloperRepositry, DeveloperRepositry>();
-
+            builder.Services.AddScoped<IProjectServieces, ProjectServieces>();
+            builder.Services.AddScoped<IProjectRepositry, ProjectRepositry>();
             builder.Services.AddScoped<IFeedBackOnClientService, FeedBackOnClientService>();
             builder.Services.AddScoped<IReviewTeamService, ReviewTeamService>();
             builder.Services.AddScoped<IReviewDeveloperService, ReviewDeveloperService>();

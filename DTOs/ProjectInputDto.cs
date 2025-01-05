@@ -7,7 +7,7 @@ namespace OutsourcingSystem.DTOs
     public class ProjectInputDto
     {
      
-        public int ClientID { get; set; }
+        public int ClientIDinrequest { get; set; }
         [Required]
         public DateTime StartDate { get; set; }
 
@@ -39,7 +39,7 @@ namespace OutsourcingSystem.DTOs
         public DateTime? EndAtinproject { get; set; }
 
         [Required(ErrorMessage = "Status is required.")]
-        public string Statusinproject { get; set; } // Pending, Ongoing, Completed
+        public string Statusinproject { get; set; } = "Ongoing"; // Pending, Ongoing, Completed
 
 
         public int? DeveloperIDinproject { get; set; }

@@ -2,34 +2,35 @@
 using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Models;
 using OutsourcingSystem.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace OutsourcingSystem.Services
 {
-    public class ProjectServieces
+    public class ProjectServieces : IProjectServieces
     {
-        private readonly IProjectRepositry _projectRepositry  ;
-    
+        private readonly IProjectRepositry _projectRepositry;
+
 
         public ProjectServieces(IProjectRepositry projectRepositry)
         {
 
-             _projectRepositry = projectRepositry;
+            _projectRepositry = projectRepositry;
 
         }
 
-        public void AddProject(ProjectInputDto project )
+        public void AddProject(int idclienttoken, ProjectInputDto project)
         {
 
             var projectIn = new Project
             {
-                ClientID = project.ClientIDinproject,
+                ClientID = idclienttoken,
                 DeveloperID = project.DeveloperIDinproject,
-                 Description = project.Description,
-                 TeamID = project.TeamIDinproject,
-                 StartAt = project.StartAtinproject,
-                 EndAt = project.EndAtinproject,
-                 Status = project.Status,
-                 DailyHoursNeeded = project.DailyHoursNeeded,
+                Description = project.Description,
+                TeamID = project.TeamIDinproject,
+                StartAt = project.StartAtinproject,
+                EndAt = project.EndAtinproject,
+                //Status = project.Status,
+                DailyHoursNeeded = project.DailyHoursNeeded,
 
             };
 
@@ -51,7 +52,7 @@ namespace OutsourcingSystem.Services
 
                 return project;
             }
-           catch (Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception($"An unexpected error occurred: {ex.Message}");
             }
@@ -82,6 +83,105 @@ namespace OutsourcingSystem.Services
 
         }
 
-        
+        public void UpdateProject(int id, UpdateProjectDto project)
+        {
+            try
+            {
+                // Ensure the provided updated project data is not null
+                if (project == null)
+                    throw new ArgumentNullException(nameof(project), "Updated project data cannot be null.");
+
+                // Validate the project DTO against its data annotations
+                var validationResults = new List<ValidationResult>();
+                var validationContext = new ValidationContext(project, null, null);
+
+                if (!Validator.TryValidateObject(project, validationContext, validationResults, true))
+                {
+                    // Collect validation errors and throw an exception with details
+                    string errors = string.Join("; ", validationResults.Select(v => v.ErrorMessage));
+                    throw new ArgumentException($"Validation failed: {errors}");
+                }
+
+                // Get the existing project from the repository using ID
+                Project projectt = _projectRepositry.GetProjectByIDClient(id);
+
+                if (projectt == null)
+                    throw new KeyNotFoundException($"Project with ID {id} not found.");
+
+                if (projectt.IsDelete == true)
+                {
+                    throw new Exception("Cannot update a deleted project. Please log out.");
+                }
+
+                // Update project fields only if new values are provided
+                if (!string.IsNullOrEmpty(project.Name))
+                {
+                    projectt.Name = project.Name;
+                }
+                if (!string.IsNullOrEmpty(project.Description))
+                {
+                    projectt.Description = project.Description;
+                }
+                if (project.StartAt != default(DateTime))
+                {
+                    projectt.StartAt = project.StartAt;
+                }
+                if (project.EndAt.HasValue)
+                {
+                    projectt.EndAt = project.EndAt.Value;
+                }
+
+                // Update the last updated timestamp
+                projectt.UpdateDate = DateTime.Now;
+
+                // Update the project in the repository
+                _projectRepositry.UpdateProject(projectt);
+            }
+            catch (ArgumentNullException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+        public bool SoftDeleteClient(int id)
+        {
+            // Validate the client ID to ensure >1 
+            if (id <= 0)
+                throw new ArgumentException("project ID must be greater than zero.");
+
+            try
+            {
+                // get the client by ID from the repository
+                var project = _projectRepositry.GetProjectByIDClient(id);
+
+                // Check if the client exists
+                if (project == null)
+                    throw new KeyNotFoundException($"project with ID {id} not found.");
+
+                // Mark the client as soft-deleted in the repository
+                project.IsDelete = true;
+                _projectRepositry.UpdateProject(project);
+                return _projectRepositry.DeleteProject(project);
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"An error occurred while soft-deleting the project with ID {id}.", ex);
+            }
+        }
+
     }
 }

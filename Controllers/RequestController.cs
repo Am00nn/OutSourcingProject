@@ -6,20 +6,23 @@ using System.Security.Claims;
 
 namespace OutsourcingSystem.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class RequestController : ControllerBase
     {
         private readonly IRequestService _requestService;
+        private readonly IProjectServieces _projectService;
 
-        public RequestController(IRequestService requestService)
+        public RequestController(IRequestService requestService, IProjectServieces projectservice)
         {
             _requestService = requestService;
+            _projectService = projectservice;
         }
 
+        [Authorize(Roles = "Client")]
         [HttpPost("SubmitRequest")]
-        public async Task<IActionResult> SubmitRequest([FromBody] RequestDto requestDto)
+        public async Task<IActionResult> SubmitRequest([FromQuery] RequestDto requestDto, [FromQuery] ProjectInputDto projectInputDto)
         {
             // Extract ClientID from Token
             var clientId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -33,10 +36,12 @@ namespace OutsourcingSystem.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Invalid data.");
 
-            await _requestService.SubmitRequestAsync(requestDto, int.Parse(clientId));
+           // _projectService.AddProject();
+            await _requestService.SubmitRequestAsync(requestDto, int.Parse(clientId), projectInputDto);
             return Ok("Request submitted successfully.");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("ProcessRequest")]
         public async Task<IActionResult> ProcessRequest([FromBody] ProcessRequestDto processRequestDto)
         {

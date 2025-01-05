@@ -6,6 +6,6 @@ namespace OutsourcingSystem.Services
     {
         Task<IEnumerable<PendingRequestDto>> GetPendingRequestsAsync();
         Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType);
-        Task SubmitRequestAsync(RequestDto requestDto, int userid);
+        Task SubmitRequestAsync(RequestDto requestDto, int userid,ProjectInputDto project);
     }
 }

@@ -12,16 +12,17 @@ namespace OutsourcingSystem.Services
         private readonly IReviewTeamService _reviewTeamService;
         private readonly IReviewDeveloperService _reviewDevService;
         private readonly IFeedBackOnClientService _feedbackService;
-        //private readonly IDeveloperService _developerService;
+        private readonly IDeveloperServices _developerService;
         public JointService(ITeamService teamService, ITeamMemberService teamMemberService,
             IReviewTeamService reviewteamservice, IReviewDeveloperService reviewDeveloperService,
-            IFeedBackOnClientService feedback)
+            IFeedBackOnClientService feedback, IDeveloperServices developerServices)
         {
             _teamMemberService = teamMemberService;
             _teamService = teamService;
             _reviewTeamService = reviewteamservice;
             _reviewDevService = reviewDeveloperService;
             _feedbackService = feedback;
+            _developerService = developerServices;
         }
 
         public string AddTeamMemberToTeam(int developerID, int teamID)
@@ -41,14 +42,31 @@ namespace OutsourcingSystem.Services
 
                 if (remaining > 0)
                 {
-                    //--waiting on developer--
                     //check developer exists [developer service]
-                    //check developer active [developer service]
-                    //check that developer canBePartOfTeam [developer service]
+                    var dev = _developerService.GetById(developerID);
 
-                    //Add team member 
-                    _teamMemberService.AddTeamMember(teamID, developerID);
-                    return "Team member added sucessfully!";
+                    if (dev != null)
+                    {
+                        //check developer active [developer service]
+                        bool DevActive = dev.AvailabilityStatus;
+
+                        if (DevActive)
+                        {
+                            //check that developer canBePartOfTeam [developer service]
+                            bool PartOfTeam = dev.CanBePartOfTeam;
+
+                            if (PartOfTeam)
+                            {
+                                //Add team member 
+                                _teamMemberService.AddTeamMember(teamID, developerID);
+                                return "Team member added sucessfully!";
+                            }
+                            else return "<!>This developer cannot be part of a team<!>";
+                        }
+                        else return "<!>This developer is not active<!>";
+                    }
+
+                    else return "<!>This developer does not exist<!>";
                 }
 
                 else return "<!>Team does not have sufficient cappacity<!>";

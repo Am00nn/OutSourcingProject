@@ -1,4 +1,5 @@
-﻿using OutsourcingSystem.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystem.DTOs;
 using OutsourcingSystem.Models;
 using OutsourcingSystem.Repositories;
 using System.ComponentModel.DataAnnotations;
@@ -377,6 +378,19 @@ namespace OutsourcingSystem.Services
                     throw new Exception($"An error occurred while retrieving developer in the rating '{rating}'.", ex);
                 }
             
+        }
+
+        public Developer GetById(int id)
+        {
+            try
+            {
+                return _developerRepositry.GetById(id);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception($"An error happen while retrieving the Developer with ID {id}.", ex);
+            }
         }
     }
 }

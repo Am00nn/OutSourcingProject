@@ -24,7 +24,9 @@ namespace OutsourcingSystem.Repositories
         //Hard deleting DeveloperSkill
         public void DeleteDeveloperSkill(int DevID, int SkillID)
         {
-            _context.DeveloperSkill.Where(d => d.DeveloperID == DevID && d.SkillID == SkillID);
+            var skill = _context.DeveloperSkill.FirstOrDefault(d => d.DeveloperID == DevID && d.SkillID == SkillID);
+            _context.DeveloperSkill.Remove(skill);
+            _context.SaveChanges();
         }
 
         //Gets all DeveloperSkill [returns list of developerSkill]

@@ -48,7 +48,7 @@ namespace OutsourcingSystem.Controllers
        // Update  client data
 
         [HttpPut("UpdateClient")]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Client,admin")]
         public IActionResult UpdateClient([FromBody] UpdateClientData clientDto)
         {
             // Check if the provided client data is null a
@@ -84,7 +84,7 @@ namespace OutsourcingSystem.Controllers
         //Delete client data
 
         [HttpDelete("DeleteClient")]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = "Client,admin")]
         public IActionResult SoftDeleteClient()
         {
             try
@@ -111,7 +111,7 @@ namespace OutsourcingSystem.Controllers
         
         [HttpGet("GetClientBy")]
 
-     //   [Authorize(Roles = "Developer, Admin")]
+       [Authorize(Roles = "developer,Admin")]
         public IActionResult GetAllClients(
          string name,
          [FromQuery] string industry,
@@ -152,7 +152,8 @@ namespace OutsourcingSystem.Controllers
         }
 
         [HttpGet("GetClientById")]
-      //  [Authorize(Roles = "Developer, Admin")]
+        [Authorize(Roles = "Client")]
+    
         public IActionResult GetClientById()
         {
             try
@@ -174,7 +175,8 @@ namespace OutsourcingSystem.Controllers
 
 
         [HttpGet("by-industry")]
-       // [Authorize(Roles = "Developer, Admin")]
+        [Authorize(Roles = "developer,Admin")]
+        // [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientsByIndustry([FromQuery] string industry)
         {
             if (string.IsNullOrEmpty(industry))
@@ -197,7 +199,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [HttpGet("by-rating")]
-        //[Authorize(Roles = "Developer, Admin")]
+        [Authorize(Roles = "Developer, Admin")]
         public IActionResult GetClientsByRating([FromQuery] decimal rating)
         {
             if (rating < 0)

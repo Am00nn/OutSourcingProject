@@ -31,7 +31,7 @@ namespace OutsourcingSystem.Models
         public decimal HourlyRate { get; set; }
 
         [Required(ErrorMessage = "Availability status is required.")]
-        public bool AvailabilityStatus { get; set; }
+        public bool AvailabilityStatus { get; set; }=true;
 
         [MaxLength(1000, ErrorMessage = "Career summary cannot exceed 1000 characters.")]
         public string CareerSummary { get; set; }

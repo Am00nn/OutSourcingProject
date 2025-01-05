@@ -13,9 +13,11 @@ namespace OutsourcingSystem.Services
         private readonly IReviewDeveloperService _reviewDevService;
         private readonly IFeedBackOnClientService _feedbackService;
         private readonly IDeveloperServices _developerService;
+        private readonly IProjectServieces _projectService;
         public JointService(ITeamService teamService, ITeamMemberService teamMemberService,
             IReviewTeamService reviewteamservice, IReviewDeveloperService reviewDeveloperService,
-            IFeedBackOnClientService feedback, IDeveloperServices developerServices)
+            IFeedBackOnClientService feedback, IDeveloperServices developerServices,
+            IProjectServieces projectServieces)
         {
             _teamMemberService = teamMemberService;
             _teamService = teamService;
@@ -23,6 +25,7 @@ namespace OutsourcingSystem.Services
             _reviewDevService = reviewDeveloperService;
             _feedbackService = feedback;
             _developerService = developerServices;
+            _projectService = projectServieces;
         }
 
         public string AddTeamMemberToTeam(int developerID, int teamID)
@@ -118,20 +121,19 @@ namespace OutsourcingSystem.Services
         {
             //************************Add this when developer added*************
             //check valid team id 
-            //bool validDev = _devService.CheckDevByID(input.ID);
+            var validDev = _developerService.GetById(DevID);
 
             //*************************Add these validation when project added********************
             //check that this client  actually worked with this team 
-            //bool eligibleToReview = _projectService.GetProjectByClientTeamIDs;//will get this from projects table
+            //bool eligibleToReview = _projectService.GetProjectByClientIdDevID;//will get this from projects table
             //check project completed 
 
-            //if (validDev)
-            //{
-            //  return _developerService.AddReviewDev(DevID, input);
-            //}
-            //else return -1; //invalid team found
+            if (validDev != null)
+            {
+              return _reviewDevService.AddReviewDev(DevID, input);
+            }
+            else return -1; //invalid team found
 
-            return 1;
         }
 
         public int UpdateReviewDeveloper(int ClientID, ClientReviewInDTO review)

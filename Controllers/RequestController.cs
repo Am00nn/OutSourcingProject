@@ -51,6 +51,16 @@ namespace OutsourcingSystem.Controllers
 
             return Ok("Request processed successfully.");
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("ViweRequestpending")]
+        public async Task<IActionResult> GetPendingRequests()
+        {
+            var pendingRequests = await _requestService.GetPendingRequestsAsync();
+
+            return Ok(pendingRequests);
+        }
+
     }
 
 }

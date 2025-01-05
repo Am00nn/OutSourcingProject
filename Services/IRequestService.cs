@@ -5,6 +5,6 @@ namespace OutsourcingSystem.Services
     public interface IRequestService
     {
         Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType);
-        Task SubmitRequestAsync(RequestDto requestDto, int clientId);
+        Task SubmitRequestAsync(RequestDto requestDto, int userid);
     }
 }

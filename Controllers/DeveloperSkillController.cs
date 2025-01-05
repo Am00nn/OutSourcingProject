@@ -17,12 +17,12 @@ namespace OutsourcingSystem.Controllers
         }
 
 
-        [HttpPost("Add Skill to Developer")]
-        public IActionResult AddSkillToDeveloper( int developerID, int skillID)
+        [HttpPost("Add Skill to Developer {developerID},{skillID}")]
+        public IActionResult AddSkillToDeveloper( int developerID, int skillID, int proficiency)
         {
             try
             {
-                return Ok(_developerSkillService.AddDeveloperSkill(developerID, skillID));
+                return Ok(_developerSkillService.AddDeveloperSkill( skillID, developerID, proficiency));
             }
             catch (Exception ex)
             {
@@ -31,12 +31,12 @@ namespace OutsourcingSystem.Controllers
 
         }
 
-        [HttpDelete("Remove skill from dev")]
-        public IActionResult RemoveSkillFromDev(int TeamID, int devID)
+        [HttpDelete("Remove skill from dev {skillID}, {devID}")]
+        public IActionResult RemoveSkillFromDev(int skillID, int devID)
         {
             try
             {
-                var result = _developerSkillService.DeleteDeveloperSkill(TeamID, devID);
+                var result = _developerSkillService.DeleteDeveloperSkill(skillID, devID);
 
                 if (result == 0) return Ok("Skill removed from developer successfully");
                 else if (result == 1) return BadRequest("<!>This developer skill relationship does not exist<!>");
@@ -50,8 +50,8 @@ namespace OutsourcingSystem.Controllers
 
 
         [Authorize(Roles = "Admin, Client")]
-        [HttpGet("Get Developer Skill {int DevID}")]
-        public IActionResult GetDevSkills(int DevID)
+        [HttpGet("Get Developer Skill {DevID}")]
+        public IActionResult GetDevSkills( int DevID)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace OutsourcingSystem.Controllers
 
 
         [Authorize(Roles = "Admin, Client")]
-        [HttpGet("Get Developers By Skill {int SkillID}")]
+        [HttpGet("Get Developers By Skill {SkillID}")]
         public IActionResult GetDevsBySkill(int SkillID)
         {
             try

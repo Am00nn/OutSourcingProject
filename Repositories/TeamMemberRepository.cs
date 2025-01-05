@@ -1,4 +1,5 @@
-﻿using OutsourcingSystem.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OutsourcingSystem.Models;
 
 namespace OutsourcingSystem.Repositories
 {
@@ -30,7 +31,10 @@ namespace OutsourcingSystem.Repositories
         //Hard deleting teamMember
         public void DeleteTeamMemebr(int teamID, int developerID)
         {
-            _context.TeamMember.Where(t=>t.DeveloperID == developerID && t.TeamID == teamID);
+            TeamMember teamM = _context.TeamMember.FirstOrDefault(t=>t.DeveloperID == developerID && t.TeamID == teamID);
+            _context.TeamMember.Remove(teamM);
+            _context.SaveChanges();
+
         }
 
         //Gets all teamMembers [returns list of teamMembers]

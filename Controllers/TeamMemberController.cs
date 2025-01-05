@@ -26,7 +26,7 @@ namespace OutsourcingSystem.Controllers
         {
             try
             {
-                return Ok(_jointService.AddTeamMemberToTeam(teamID, developerID));
+                return Ok(_jointService.AddTeamMemberToTeam(developerID, teamID));
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace OutsourcingSystem.Controllers
         {
             try
             {
-                return Ok(_jointService.RemoveTeamMemberFromTeam(TeamID, devID));
+                return Ok(_jointService.RemoveTeamMemberFromTeam(devID, TeamID));
             }
             catch (Exception ex)
             {

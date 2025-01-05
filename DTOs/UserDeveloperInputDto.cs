@@ -59,6 +59,8 @@ namespace OutsourcingSystem.DTOs
 
         [Url(ErrorMessage = "Invalid URL format.")]
         public string DocumentLink { get; set; }
+
+        public string DeveloperName { get; set; }
         //public bool IsApprove { get; set; } = false;
         //public int? IsApproveBy { get; set; }
 

@@ -12,24 +12,25 @@ namespace OutsourcingSystem.Services
         }
 
         //Adds developer skill using input from user 
-        public string AddDeveloperSkill(int skillID, int developerID)
+        public string AddDeveloperSkill(int skillID, int developerID, int proficiency = 0)
         {
             //Check that developer skill exists
             var devSkillExists = _DeveloperSkillRepository.GetDeveloperSkillByIDs(developerID, skillID);
 
-            if (devSkillExists != null)
+            if (devSkillExists == null)
             {
                 //mapping input to developerSkill 
                 var devSkill = new DeveloperSkill
                 {
                     DeveloperID = developerID,
                     SkillID = skillID,
+                    Proficiency = proficiency
                 };
 
                 return _DeveloperSkillRepository.AddDeveloperSkill(devSkill);
             }
 
-            else return "<!>This developer skill relationship does not exist<!>";
+            else return "<!>This developer skill relationship already exists<!>";
         }
 
         //Deleting developer skill [returns 0 no errors or 1 error occured]
@@ -71,7 +72,7 @@ namespace OutsourcingSystem.Services
             return devSkills.OrderBy(t => t.DeveloperID).Skip(number).Take(PageSize).ToList();
         }
 
-        public string GetSkillByDevID(int DevID)
+        public List<DeveloperSkill> GetSkillByDevID(int DevID)
         {
             //validate output -> skill does not exist, no developers found
             //Check that developer skill relation exists 
@@ -79,9 +80,9 @@ namespace OutsourcingSystem.Services
 
             if (devSkillExists != null)
             {
-                return ($"Developers with this skill are: \n" + _DeveloperSkillRepository.GetAllSkillsForDev(DevID));
+                return _DeveloperSkillRepository.GetAllSkillsForDev(DevID);
             }
-            else return ("<!>This developer does not have skills or does not exist<!>");
+            else return null; // ("<!>This developer does not have skills or does not exist<!>");
 
         }
 

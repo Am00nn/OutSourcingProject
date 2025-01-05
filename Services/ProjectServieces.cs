@@ -18,17 +18,18 @@ namespace OutsourcingSystem.Services
 
         }
 
-        public void AddProject(int idclienttoken, ProjectInputDto project)
+        public void AddProject(int idclienttoken, ProjectRequestInputDto project)
         {
 
             var projectIn = new Project
             {
                 ClientID = idclienttoken,
-                DeveloperID = project.DeveloperIDinproject,
+                DeveloperID = project.Developerid??0,
                 Description = project.Description,
-                TeamID = project.TeamIDinproject,
-                StartAt = project.StartAtinproject,
-                EndAt = project.EndAtinproject,
+                Name = project.Name,
+                TeamID = project.Teamid??0,
+                StartAt = project.StartAt,
+                EndAt = project.EndAt,
                 //Status = project.Status,
                 DailyHoursNeeded = project.DailyHoursNeeded,
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OutsourcingSystem.DTOs
 {
-    public class ProjectInputDto
+    public class ProjectRequestInputDto
     {
      
         //public int ClientIDinrequest { get; set; }
@@ -21,10 +21,10 @@ namespace OutsourcingSystem.DTOs
    
       //  public int ProjectID { get; set; }
 
-        public int ClientIDinproject { get; set; }
+       // public int ClientId { get; set; }
   
 
-        public int? TeamIDinproject { get; set; }
+        public int? Teamid { get; set; }
 
 
         [Required(ErrorMessage = "Project name is required.")]
@@ -34,19 +34,20 @@ namespace OutsourcingSystem.DTOs
         [MaxLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; }
 
-        public DateTime StartAtinproject { get; set; }
+        public DateTime StartAt { get; set; }
 
-        public DateTime? EndAtinproject { get; set; }
+        public DateTime? EndAt { get; set; }
 
-        [Required(ErrorMessage = "Status is required.")]
-        public string Statusinproject { get; set; } = "Ongoing"; // Pending, Ongoing, Completed
+        //[Required(ErrorMessage = "Status is required.")]
+        //public string Statusinproject { get; set; } = "Ongoing"; // Pending, Ongoing, Completed
 
 
-        public int? DeveloperIDinproject { get; set; }
-    
+        public int? Developerid { get; set; }
+
 
         [Required(ErrorMessage = "Daily hours needed is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Daily hours needed must be at least 1.")]
         public int DailyHoursNeeded { get; set; }
+        public string RequestType { get; set; }
     }
 }

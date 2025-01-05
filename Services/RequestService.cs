@@ -8,18 +8,25 @@ namespace OutsourcingSystem.Services
 {
     public class RequestService : IRequestService
     {
+
         private readonly IClientRequestDeveloperRepository _developerRequestRepository;
         private readonly IClientRequestTeamRepository _teamRequestRepository;
         private readonly IEmailService _emailService;
         private readonly IClientRepository _clientRepository;
         private readonly IUserRepositry _userRepository;
         private readonly IUserServices _userServices;
-
+        private readonly IDeveloperRepositry _developerRepository;
+        private readonly ITeamRepository _teamRepository;
 
         public RequestService(
             IClientRequestDeveloperRepository developerRequestRepository,
             IClientRequestTeamRepository teamRequestRepository,
-            IEmailService emailService, IClientRepository clientRepository, IUserServices userServices, IUserRepositry userRepository)
+            IEmailService emailService,
+            IClientRepository clientRepository,
+            IUserServices userServices,
+            IUserRepositry userRepository,
+            IDeveloperRepositry developerRepository,
+            ITeamRepository teamRepository)
         {
             _developerRequestRepository = developerRequestRepository;
             _teamRequestRepository = teamRequestRepository;
@@ -27,27 +34,32 @@ namespace OutsourcingSystem.Services
             _clientRepository = clientRepository;
             _userServices = userServices;
             _userRepository = userRepository;
-
+            _developerRepository = developerRepository;
+            _teamRepository = teamRepository;
         }
 
         public async Task SubmitRequestAsync(RequestDto requestDto, int userid)
         {
-            // Ensure ClientID is not null
             if (userid == 0)
             {
                 throw new InvalidOperationException("ClientID cannot be null.");
             }
 
-            // Convert ClientID from nullable to non-nullable
             int clientId = _clientRepository.GetByuid(userid).ClientID;
             string email = _userServices.GetEmail(userid);
 
             if (requestDto.RequestType == "Developer")
             {
+                var developer = _developerRepository.GetById(requestDto.developerid ?? 0);
+                if (developer == null || !developer.AvailabilityStatus)
+                {
+                    throw new InvalidOperationException("The selected developer is not available for booking.");
+                }
+
                 var developerRequest = new ClientRequestDeveloper
                 {
-                    ClientID = clientId, // Use converted value
-                    DeveloperID = requestDto.developerid ?? 0, // Default to 0 if null
+                    ClientID = clientId,
+                    DeveloperID = requestDto.developerid ?? 0,
                     StartDate = requestDto.StartDate,
                     EndDate = requestDto.EndDate,
                     Status = "Pending"
@@ -56,10 +68,16 @@ namespace OutsourcingSystem.Services
             }
             else if (requestDto.RequestType == "Team")
             {
+                var team = _teamRepository.GetTeamByID(requestDto.TeamID ?? 0);
+                if (team == null || !team.IsAvailable)
+                {
+                    throw new InvalidOperationException("The selected team is not available for booking.");
+                }
+
                 var teamRequest = new ClientRequestTeam
                 {
-                    ClientID = clientId, // Use converted value
-                    TID = requestDto.TeamID ?? 0, // Default to 0 if null
+                    ClientID = clientId,
+                    TID = requestDto.TeamID ?? 0,
                     StartDate = requestDto.StartDate,
                     EndDate = requestDto.EndDate,
                     Status = "Pending"
@@ -67,14 +85,31 @@ namespace OutsourcingSystem.Services
                 await _teamRequestRepository.AddRequestAsync(teamRequest);
             }
 
-            await _emailService.SendEmailAsync(email, "New Request Submitted", "A new request has been submitted.");
-            string AdmintEmail = "amanialshmali7@gmail.com";
-            await _emailService.SendEmailAsync(AdmintEmail, "New Request Submitted", "A new request has been submitted.");
+            string clientEmailMessage =
+            $"Dear Client,\n\n" +
+            $"Your request has been submitted successfully. Below are the details of your request:\n\n" +
+            $"- Request Type: {requestDto.RequestType}\n" +
+            $"- Start Date: {requestDto.StartDate.ToShortDateString()}\n" +
+            $"- End Date: {requestDto.EndDate.ToShortDateString()}\n" +
+            "\nWe will notify you once your request is processed. Thank you for choosing our service.";
 
+            await _emailService.SendEmailAsync(email, "New Request Submitted", clientEmailMessage);
+            
+            
+            string adminEmail = "amanialshmali7@gmail.com";
 
+            string adminEmailMessage =
+            $"Dear Admin,\n\n" +
+           $"A new request has been submitted. Below are the details:\n\n" +
+           $"- Request Type: {requestDto.RequestType}\n" +
+           $"- Client ID: {clientId}\n" +
+           $"- Start Date: {requestDto.StartDate.ToShortDateString()}\n" +
+           $"- End Date: {requestDto.EndDate.ToShortDateString()}\n" +
+           "\nPlease review the request and take the necessary actions.";
+
+            await _emailService.SendEmailAsync(adminEmail, "New Request Submitted", adminEmailMessage);
 
         }
-
 
         public async Task ProcessRequestAsync(int requestId, bool isAccepted, string requestType)
         {
@@ -82,33 +117,76 @@ namespace OutsourcingSystem.Services
 
             if (requestType == "Developer")
             {
-                // Retrieve the developer request by requestId
                 var request = await _developerRequestRepository.GetRequestByIdAsync(requestId);
+                if (request == null)
+                {
+                    throw new InvalidOperationException("Developer request not found.");
+                }
+
+                var developer = _developerRepository.GetById(request.DeveloperID);
+                if (developer == null)
+                {
+                    throw new InvalidOperationException("The developer is not found.");
+                }
+
                 request.Status = isAccepted ? "Approved" : "Rejected";
                 await _developerRequestRepository.UpdateRequestAsync(request);
 
-                // Retrieve the client's User and email using UID
+                if (isAccepted)
+                {
+                    developer.AvailabilityStatus = false;
+                    _developerRepository.Update(developer);
+                }
+
                 var client = _clientRepository.GetById(request.ClientID);
                 var user = _userRepository.GetUserById(client.UID);
                 clientEmail = user?.Email ?? throw new InvalidOperationException("Client email not found.");
             }
             else if (requestType == "Team")
             {
-                // Retrieve the team request by requestId
                 var request = await _teamRequestRepository.GetRequestByIdAsync(requestId);
+                if (request == null)
+                {
+                    throw new InvalidOperationException("Team request not found.");
+                }
+
+                var team = _teamRepository.GetTeamByID(request.TID);
+                if (team == null)
+                {
+                    throw new InvalidOperationException("The team is not found.");
+                }
+
                 request.Status = isAccepted ? "Approved" : "Rejected";
                 await _teamRequestRepository.UpdateRequestAsync(request);
 
-                // Retrieve the client's User and email using UID
+                if (isAccepted)
+                {
+                    team.IsAvailable = false;
+                    _teamRepository.UpdateTeam(team);
+                }
+
                 var client = _clientRepository.GetById(request.ClientID);
                 var user = _userRepository.GetUserById(client.UID);
                 clientEmail = user?.Email ?? throw new InvalidOperationException("Client email not found.");
             }
 
-            // Send an email notification to the client
-            string statusMessage = isAccepted ? "Your request has been approved." : "Your request has been rejected.";
-            await _emailService.SendEmailAsync(clientEmail, "Request Status Update", statusMessage);
+                string clientStatusMessage =
+                isAccepted
+                  ? $"Dear Client,\n\nYour request of type '{requestType}' has been approved successfully. Below are the details:\n\n" +
+                  $"- Request Type: {requestType}\n" +
+                  $"- Request ID: {requestId}\n" +
+                  $"- Status: Approved\n\n" +
+                  "Thank you for choosing our service. If you have any questions, please contact support."
+                  : $"Dear Client,\n\nWe regret to inform you that your request of type '{requestType}' has been rejected. Below are the details:\n\n" +
+                  $"- Request Type: {requestType}\n" +
+                  $"- Request ID: {requestId}\n" +
+                  $"- Status: Rejected\n\n" +
+                  "We apologize for any inconvenience caused. Please contact support for more details.";
+
+                 await _emailService.SendEmailAsync(clientEmail, "Request Status Update", clientStatusMessage);
+
         }
+
 
 
     }

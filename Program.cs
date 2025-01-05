@@ -17,11 +17,6 @@ namespace OutsourcingSystem
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
-
-
-
-
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IUserRepositry, UserRepositry>();
@@ -61,9 +56,6 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<IEmailService, EmailService>();
 
 
-
-
-
             // Add services to the container.
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -90,10 +82,6 @@ namespace OutsourcingSystem
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)) // Match with your token generation key.
                 };
             });
-
-
-
-
 
 
             builder.Services.AddControllers();

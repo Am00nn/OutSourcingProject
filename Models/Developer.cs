@@ -13,6 +13,7 @@ namespace OutsourcingSystem.Models
         public int UserID { get; set; }
         public User User { get; set; }
 
+        public string DeveloperName { get; set; }
 
         [Required(ErrorMessage = "Specialization is required.")]
         public string Specialization { get; set; }
@@ -58,7 +59,10 @@ namespace OutsourcingSystem.Models
 
         public bool IsDelete {  get; set; }  
         
-       public DateTime? UpdateDate { get; set; } 
+       public DateTime? UpdateDate { get; set; }
+
+        [Range(0, 5, ErrorMessage = "Commitment rating must be between 0 and 5.")]
+        public decimal CommitmentRating { get; set; }
 
 
     }

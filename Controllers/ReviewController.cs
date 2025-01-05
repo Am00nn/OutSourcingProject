@@ -25,7 +25,6 @@ namespace OutsourcingSystem.Controllers
             try
             {
                 int DevID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
                 return Ok(_jointService.AddReviewDeveloper(DevID, input));
             }
             catch (Exception ex)
@@ -42,8 +41,7 @@ namespace OutsourcingSystem.Controllers
             try
             {
                 int ClientID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-
-                return Ok(_jointService.AddReviewDeveloper(ClientID, input));
+                return Ok(_jointService.AddReviewTeam(ClientID, input));
             }
             catch (Exception ex)
             {
@@ -112,7 +110,7 @@ namespace OutsourcingSystem.Controllers
             {
                 int DevID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-                return Ok(_jointService.DeleteTeamReview(DevID, input.ID));
+                return Ok(_jointService.DeleteDeveloperReview(DevID, input.ID));
 
             }
             catch (Exception ex)

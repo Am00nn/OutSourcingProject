@@ -75,7 +75,10 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<IClientRepository, ClientRepository>();
             builder.Services.AddScoped<IReviewTeamRepository, ReviewTeamRepository>();
             builder.Services.AddScoped<IReviewDevRepository, ReviewDevRepository>();
+            builder.Services.AddScoped<IFeedBackOnClientRepository, FeedBackOnClientRepository>();
+            builder.Services.AddScoped<IDeveloperRepositry, DeveloperRepositry>();
 
+            builder.Services.AddScoped<IFeedBackOnClientService, FeedBackOnClientService>();
             builder.Services.AddScoped<IReviewTeamService, ReviewTeamService>();
             builder.Services.AddScoped<IReviewDeveloperService, ReviewDeveloperService>();
             builder.Services.AddScoped<IDeveloperSkillService, DeveloperSkillService>();
@@ -89,8 +92,6 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IDeveloperServices, DeveloperServices>();
-
-            builder.Services.AddScoped<IDeveloperRepositry, DeveloperRepositry>();
 
             builder.Services.AddScoped<IRequestService, RequestService>();
             builder.Services.AddScoped<IClientRequestDeveloperRepository, ClientRequestDeveloperRepository>();

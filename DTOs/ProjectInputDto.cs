@@ -7,19 +7,19 @@ namespace OutsourcingSystem.DTOs
     public class ProjectInputDto
     {
      
-        public int ClientIDinrequest { get; set; }
-        [Required]
-        public DateTime StartDate { get; set; }
+        //public int ClientIDinrequest { get; set; }
+        //[Required]
+        //public DateTime StartDate { get; set; }
 
-        [Required]
-        public DateTime EndDate { get; set; }
+        //[Required]
+        //public DateTime EndDate { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Status { get; set; } = "Pending";
+        //[Required]
+        //[StringLength(50)]
+        //public string Status { get; set; } = "Pending";
 
    
-        public int ProjectID { get; set; }
+      //  public int ProjectID { get; set; }
 
         public int ClientIDinproject { get; set; }
   

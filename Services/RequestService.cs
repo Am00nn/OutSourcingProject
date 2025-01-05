@@ -17,6 +17,7 @@ namespace OutsourcingSystem.Services
         private readonly IUserServices _userServices;
         private readonly IDeveloperRepositry _developerRepository;
         private readonly ITeamRepository _teamRepository;
+        private readonly IProjectServieces _projectServieces;
 
         public RequestService(
             IClientRequestDeveloperRepository developerRequestRepository,
@@ -26,7 +27,8 @@ namespace OutsourcingSystem.Services
             IUserServices userServices,
             IUserRepositry userRepository,
             IDeveloperRepositry developerRepository,
-            ITeamRepository teamRepository)
+            ITeamRepository teamRepository,
+             IProjectServieces projectServieces)
         {
             _developerRequestRepository = developerRequestRepository;
             _teamRequestRepository = teamRequestRepository;
@@ -36,9 +38,10 @@ namespace OutsourcingSystem.Services
             _userRepository = userRepository;
             _developerRepository = developerRepository;
             _teamRepository = teamRepository;
+            _projectServieces = projectServieces;
         }
 
-        public async Task SubmitRequestAsync(RequestDto requestDto, int userid)
+        public async Task SubmitRequestAsync(RequestDto requestDto, int userid,ProjectInputDto project)
         {
             if (userid == 0)
             {
@@ -65,6 +68,7 @@ namespace OutsourcingSystem.Services
                     Status = "Pending"
                 };
                 await _developerRequestRepository.AddRequestAsync(developerRequest);
+                _projectServieces.AddProject(clientId, project);
             }
             else if (requestDto.RequestType == "Team")
             {
@@ -83,6 +87,7 @@ namespace OutsourcingSystem.Services
                     Status = "Pending"
                 };
                 await _teamRequestRepository.AddRequestAsync(teamRequest);
+                _projectServieces.AddProject(clientId, project);
             }
 
             string clientEmailMessage =

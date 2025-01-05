@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace OutsourcingSystem.Controllers
 {
-    [Authorize]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class RequestController : ControllerBase
@@ -18,6 +18,7 @@ namespace OutsourcingSystem.Controllers
             _requestService = requestService;
         }
 
+        [Authorize(Roles = "Client")]
         [HttpPost("SubmitRequest")]
         public async Task<IActionResult> SubmitRequest([FromBody] RequestDto requestDto)
         {
@@ -37,6 +38,7 @@ namespace OutsourcingSystem.Controllers
             return Ok("Request submitted successfully.");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("ProcessRequest")]
         public async Task<IActionResult> ProcessRequest([FromBody] ProcessRequestDto processRequestDto)
         {

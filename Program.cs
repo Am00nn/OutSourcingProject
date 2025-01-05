@@ -1,4 +1,6 @@
 
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using DocuSign.eSign.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using OutsourcingSystem.Repositories;
 using OutsourcingSystem.Services;
 
+
 namespace OutsourcingSystem
 {
     public class Program
@@ -16,6 +19,11 @@ namespace OutsourcingSystem
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+
+
+
+
 
             builder.Services.AddControllers();
 
@@ -29,6 +37,7 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<IReviewTeamRepository, ReviewTeamRepository>();
             builder.Services.AddScoped<IReviewDevRepository, ReviewDevRepository>();
             builder.Services.AddScoped<IFeedBackOnClientRepository, FeedBackOnClientRepository>();
+            builder.Services.AddScoped<IDeveloperRepositry, DeveloperRepositry>();
 
             builder.Services.AddScoped<IFeedBackOnClientService, FeedBackOnClientService>();
             builder.Services.AddScoped<IReviewTeamService, ReviewTeamService>();
@@ -44,14 +53,13 @@ namespace OutsourcingSystem
             builder.Services.AddScoped<ISkillService, SkillService>();
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IDeveloperServices, DeveloperServices>();
-            builder.Services.AddScoped<IDeveloperRepositry, DeveloperRepositry>();
 
             builder.Services.AddScoped<IRequestService, RequestService>();
             builder.Services.AddScoped<IClientRequestDeveloperRepository, ClientRequestDeveloperRepository>();
             builder.Services.AddScoped<IClientRequestTeamRepository, ClientRequestTeamRepository>();
 
             // Register EmailSettings and EmailService
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+          //  builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             builder.Services.AddScoped<IEmailService, EmailService>();
 

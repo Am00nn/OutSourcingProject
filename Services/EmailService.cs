@@ -2,14 +2,15 @@
 using System.Net.Mail;
 using System.Net;
 using OutsourcingSystem.Configurations;
+using DocuSign.eSign.Model;
 
 namespace OutsourcingSystem.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly EmailSettings _emailSettings;
+        private readonly Configurations.EmailSettings _emailSettings;
 
-        public EmailService(IOptions<EmailSettings> emailSettings)
+        public EmailService(IOptions<Configurations.EmailSettings> emailSettings)
         {
             _emailSettings = emailSettings.Value;
         }
@@ -42,5 +43,14 @@ namespace OutsourcingSystem.Services
                 throw new InvalidOperationException($"Error sending email: {ex.Message}");
             }
         }
+
+
+
+
     }
+
+
+
+
+
 }

@@ -7,19 +7,18 @@ using System.Security.Claims;
 
 namespace OutsourcingSystem.Controllers
 {
-    public class DeveloperController
-    {
+ 
         [Authorize]
         [ApiController]
         [Route("api/[Controller]")]
-        public class UserController : ControllerBase
+        public class DeveloperController : ControllerBase
         {
             private readonly IConfiguration _configuration;
 
             private readonly IDeveloperServices _developerServices;
 
 
-            public UserController(IUserServices userService, IConfiguration configuration, IClientService clientService, IDeveloperServices developerServices)
+            public DeveloperController(IUserServices userService, IConfiguration configuration, IClientService clientService, IDeveloperServices developerServices)
             {
 
                 _configuration = configuration;
@@ -27,7 +26,7 @@ namespace OutsourcingSystem.Controllers
 
             }
 
-            //  [Authorize(Roles = "Client")]
+            [Authorize(Roles = "Developer,Admin")]
             [HttpPut("UpdateDeveloper")]
             public IActionResult UpdateDeveloper([FromBody] UpdateDeveInput developerupdate)
             {
@@ -44,7 +43,7 @@ namespace OutsourcingSystem.Controllers
 
                     // Return a 200 e if the update is successful
 
-                    return Ok("Client updated successfully.");
+                    return Ok("developer updated successfully.");
                 }
                 catch (KeyNotFoundException ex)
                 {
@@ -61,9 +60,9 @@ namespace OutsourcingSystem.Controllers
 
 
 
-            //Delete developer data
-
-            [HttpDelete("deleteDeveloper")]
+        //Delete developer data
+        [Authorize(Roles = "Developer,Admin")]
+        [HttpDelete("deleteDeveloper")]
 
             public IActionResult SoftDeleteClient()
             {
@@ -87,8 +86,8 @@ namespace OutsourcingSystem.Controllers
                     return StatusCode(500, $"An error occurred while soft-deleting the client: {ex.Message}");
                 }
             }
-
-            [HttpGet("GetDeveloperBy")]
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("GetDeveloperBy")]
 
             //   [Authorize(Roles = "Developer, Admin")]
             public IActionResult GetAllDeveloper(
@@ -132,8 +131,8 @@ namespace OutsourcingSystem.Controllers
             }
 
 
-
-            [HttpGet("ByName")]
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("ByName")]
             public IActionResult ByName([FromQuery] string name)
             {
                 if (string.IsNullOrEmpty(name))
@@ -152,8 +151,8 @@ namespace OutsourcingSystem.Controllers
                 }
             }
 
-
-            [HttpGet("ByAvailabilty")]
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("ByAvailabilty")]
             public IActionResult ByAvailabilty([FromQuery] bool ave)
             {
                 if (ave==null)
@@ -171,8 +170,8 @@ namespace OutsourcingSystem.Controllers
                     return StatusCode(500, $"An error occurred while retrieving : {ex.Message}");
                 }
             }
-
-            [HttpGet("BySpecilization")]
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("BySpecilization")]
             public IActionResult BySpecilization([FromQuery] string spe)
             {
                 if (string.IsNullOrEmpty(spe))
@@ -191,8 +190,8 @@ namespace OutsourcingSystem.Controllers
                 }
             }
 
-
-            [HttpGet("Byrating")]
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("Byrating")]
             public IActionResult Byrating([FromQuery] decimal rate)
             {
                 if (rate==null)
@@ -217,4 +216,4 @@ namespace OutsourcingSystem.Controllers
 
         }
     }
-}
+

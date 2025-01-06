@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OutsourcingSystem.Services;
 
@@ -16,6 +17,22 @@ namespace OutsourcingSystem.Controllers
             _developerSkillService = developerSkillService;
         }
 
+        //Adds skill to self
+        [HttpPost("Add skill to me{skillID}")]
+        public IActionResult AddSkillToMe( int skillID, int proficiency)
+        {
+            try
+            {
+                var developerID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+                return Ok(_developerSkillService.AddDeveloperSkill(skillID, developerID, proficiency));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
         [HttpPost("Add Skill to Developer {developerID},{skillID}")]
         public IActionResult AddSkillToDeveloper( int developerID, int skillID, int proficiency)

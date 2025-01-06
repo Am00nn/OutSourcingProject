@@ -91,8 +91,8 @@ namespace OutsourcingSystem.Controllers
 
             //   [Authorize(Roles = "Developer, Admin")]
             public IActionResult GetAllDeveloper(
-         string name,
-         [FromQuery] string speclization,
+         string? name,
+         [FromQuery] string? speclization,
          [FromQuery] decimal? rating,
          [FromQuery] bool? availiabilty,
          [FromQuery] int pageNumber = 1,
@@ -129,6 +129,44 @@ namespace OutsourcingSystem.Controllers
                     return StatusCode(500, $"An error occurred while retrieving : {ex.Message}");
                 }
             }
+
+
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("GetByIdDeveloper")]
+        public IActionResult GetById()
+        {
+
+
+            try
+            {
+                var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var dev = _developerServices.GetById(int.Parse(id));
+
+                return Ok(dev);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving: {ex.Message}");
+            }
+        }
+
+
+        [Authorize(Roles = "Client,Admin")]
+        [HttpGet("GetDetailesAllDepeloper")]
+        public IActionResult DeploperDetails()
+        {
+            
+            try
+            {
+                var developer = _developerServices.GetAll();
+
+                return Ok(developer);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while retrieving : {ex.Message}");
+            }
+        }
 
 
         [Authorize(Roles = "Client,Admin")]
@@ -211,9 +249,9 @@ namespace OutsourcingSystem.Controllers
             }
 
 
-           
 
 
-        }
+
     }
+}
 

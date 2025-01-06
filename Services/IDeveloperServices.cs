@@ -14,5 +14,6 @@ namespace OutsourcingSystem.Services
         void SoftDeleteClient(int id);
         void UpdateDeveloper(int id, UpdateDeveInput updateDeveloper);
         Developer GetById(int id);
+        IEnumerable<Developer> GetAll();
     }
 }

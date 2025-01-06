@@ -210,6 +210,11 @@ namespace OutsourcingSystem.Services
                 throw new Exception($"An error occurred while soft-deleting the developer with ID {id}.", ex);
             }
         }
+
+        public IEnumerable<Developer> GetAll()
+        {
+            return _developerRepositry.GetAll();
+        }
         public IEnumerable<filtrationDeveloperdto> GetAlldeveloper(string name, string speclization, decimal? rating, bool? availiabilty, int pageNumber = 1, int pageSize = 10)
         {
             // Validate pagination parameters to ensure they are positive integers

@@ -36,9 +36,10 @@ namespace OutsourcingSystem.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Invalid data.");
 
+            projectInputDto.Developerid = projectInputDto.Developerid == 0 ? 9 : 0;
+
            // _projectService.AddProject();
             await _requestService.SubmitRequestAsync(int.Parse(clientId), projectInputDto);
-            _projectService.AddProject(int.Parse(clientId), projectInputDto);
             return Ok("Request submitted successfully.");
         }
 
